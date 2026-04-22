@@ -1,0 +1,17 @@
+node_modules
+.next
+out
+.env
+.env.local
+.DS_Store
+*.log
+.vercel
+/prisma/migrations/dev.db*
+
+# Local upload fallback (contents only — keep the folder)
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# Scraped CodeFusion archive — re-generate via `python3 scripts/scrape_codefusion.py`.
+# 2.3 GB of images + 70 MB of JSON, not suitable for git.
+/scraped/

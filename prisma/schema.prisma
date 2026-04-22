@@ -1,0 +1,192 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Brand {
+  id         String   @id @default(cuid())
+  name       String
+  slug       String   @unique
+  landingUrl String?
+  logoUrl    String?
+  createdAt  DateTime @default(now())
+
+  locations  Restaurant[]
+}
+
+model Restaurant {
+  id               String   @id @default(cuid())
+  brandId          String?
+  brand            Brand?   @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  name             String
+  locationName     String?
+  slug             String   @unique
+  logoUrl          String?
+  bannerUrl        String?
+  primaryColor     String?
+  secondaryColor   String?
+  currency                String   @default("CAD")
+  stripeAccountId         String?
+  externalStripeAccountId String?
+  address                 String?
+  phone                   String?
+  businessHours           Json?
+
+  // Customer-facing extras from scrape
+  landingUrl              String?
+  googleMapsUrl           String?
+  welcomeMessageTitle     String?
+  welcomeMessageBody      String?
+
+  // Checkout policy (values captured; UI wiring progressive)
+  minOrder                Int?
+  waitTimeMinutes         Int?
+  tipValues               Json?
+  bagFee                  Json?
+
+  // Operational flags
+  inactive                Boolean   @default(false)
+  orderOpen               Boolean   @default(true)
+
+  // Full raw scraped payload (forward-compatible reference)
+  source                  Json?
+  sourceScrapedAt         DateTime?
+
+  createdAt               DateTime @default(now())
+
+  menus                   Menu[]
+  orders                  Order[]
+  members                 RestaurantMember[]
+
+  @@index([brandId])
+}
+
+model Menu {
+  id            String   @id @default(cuid())
+  restaurantId  String
+  name          String
+
+  restaurant    Restaurant    @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  categories    MenuCategory[]
+
+  @@index([restaurantId])
+}
+
+model MenuCategory {
+  id       String @id @default(cuid())
+  menuId   String
+  name     String
+  order    Int
+
+  menu     Menu       @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  items    MenuItem[]
+
+  @@index([menuId])
+}
+
+model MenuItem {
+  id          String  @id @default(cuid())
+  categoryId  String
+  name        String
+  description String?
+  price       Int
+  imageUrl    String?
+  isAvailable Boolean @default(true)
+  sortOrder   Int     @default(0)
+
+  // Scraped metadata (tax rate, POS IDs, modifier group refs, etc.)
+  taxRate     Float?
+  source      Json?
+
+  // Admin-curated markers. Known values: favorite, spicy, vegan.
+  tags        String[] @default([])
+
+  category    MenuCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId])
+}
+
+model Order {
+  id             String   @id @default(cuid())
+  restaurantId   String
+  userId         String?
+  status         String
+  totalAmount    Int
+  customerName   String
+  customerPhone  String
+  createdAt      DateTime @default(now())
+
+  restaurant     Restaurant  @relation(fields: [restaurantId], references: [id])
+  user           User?       @relation(fields: [userId], references: [id])
+  items          OrderItem[]
+  payment        Payment?
+
+  @@index([restaurantId, createdAt])
+  @@index([userId])
+}
+
+model OrderItem {
+  id          String @id @default(cuid())
+  orderId     String
+  menuItemId  String
+  quantity    Int
+  price       Int
+
+  order       Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}
+
+model Payment {
+  id                      String @id @default(cuid())
+  orderId                 String @unique
+  stripePaymentIntentId   String
+  status                  String
+
+  order                   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id               String   @id @default(cuid())
+  email            String   @unique
+  name             String?
+  passwordHash     String
+  isSuperAdmin     Boolean  @default(false)
+  stripeCustomerId String?
+  createdAt        DateTime @default(now())
+
+  memberships      RestaurantMember[]
+  orders           Order[]
+  resetTokens      PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id         String    @id @default(cuid())
+  userId     String
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model RestaurantMember {
+  id           String   @id @default(cuid())
+  userId       String
+  restaurantId String
+  role         String   @default("admin") // "admin" | "staff"
+  createdAt    DateTime @default(now())
+
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, restaurantId])
+  @@index([restaurantId])
+}
