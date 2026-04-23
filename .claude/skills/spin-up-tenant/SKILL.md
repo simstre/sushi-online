@@ -51,13 +51,16 @@ The importer (`scripts/import-from-scrape.ts`) upserts a tenant keyed on the loc
    - `address`, `phone` (formatted), `googleMapsUrl`, `landingUrl`
    - `businessHours` — JSON array of `{day: 0–6, open: "HH:mm", close: "HH:mm"}` converted from CodeFusion's epoch-ms format in America/Vancouver TZ (change `CF_RESTAURANT_TZ` env var for other regions)
    - `welcomeMessageTitle`, `welcomeMessageBody` — surfaced as a notice banner on the menu page
+   - `socials` — auto-populated from the pre-built cache at `scraped/socials.json` keyed by CodeFusion Restaurant `_id`. The cache was built by `scripts/scrape-socials.ts --build-cache` scraping each unique `landingUrl` once. If the cache has no entry (or an empty entry) for this tenant, `socials` is left null. Only ~11% of scraped landing pages expose socials — most are static brochures.
    - `minOrder` (cents), `waitTimeMinutes`, `tipValues`, `bagFee` — captured for checkout
    - `externalStripeAccountId` — the source platform's Connect account ID, **reference-only**, never used for charges (see Stripe model below)
    - `source` JSON — the entire scraped blob for this location, including modifier groups and POS IDs we haven't promoted to first-class columns yet
    - `inactive`, `orderOpen` booleans
 3. **Replaces the tenant's menu entirely**: `menu.deleteMany({ restaurantId })` then recreates categories + items from the location's menu doc. Category order follows CodeFusion's priority: `menu9 → menu8 → … → menu1 → default`.
 4. **Skips bad products**: `isProductImportable` drops entries with non-finite prices (some scraped rows have `price: "NaN"`).
-5. **Per-item source** saved on `MenuItem.source` — includes `modifiers[]` (modifier group IDs we don't yet render), `posId`, `activeAfter`, etc. `taxRate` is promoted to a first-class column.
+5. **Images**: products use `p.imageUrl` from the scrape verbatim — no fallback. Image URLs stay remote (CodeFusion's Firebase / Cloudfront CDN); `next.config.mjs` allows all HTTPS hosts. **Coverage varies wildly by tenant and that's fine**: some menus are fully imaged (e.g. Hanaya 230/230, Kokoro Mazesoba 100%), some are partial (Mapo BBQ 66/95), and some have zero product-level images at all (Sushi U Burnaby 0/239 — their CodeFusion menu stores images only at the category level, and category images are **not** fanned out to items because that would misrepresent what each item actually looks like). The menu UI handles missing images cleanly by dropping the image column and moving the "+" button inline with the price. If a tenant ends up with no images, **don't "fix" it by applying category images to products** — that was tried once and produced misleading menus where every item in a category had the same photo.
+6. **Modifiers**: materialized onto `MenuItem.modifiers` as `[{ id, name, required, maxSelect, choices: [{ id, name, price }] }]`. Resolved from `p.modifiers[]` (group IDs on each product) against the menu's modifier registry. Choices with non-finite prices or `activeAfter > now` are dropped; groups that end up with zero valid choices are dropped entirely. CodeFusion choices often reuse `posId` across the same group (e.g. all protein options share posId 213), so the importer synthesizes stable unique ids as `<groupId>:<index>`. Only items with actually-present modifier groups end up with this field populated — plain items leave it null. Most menus only use modifiers on a handful of items (e.g. Isshin Sushi: 8 of 342 items).
+7. **Per-item source** saved on `MenuItem.source` — `posId`, `activeAfter`, the raw `modifiers` ID list, etc. `taxRate` is promoted to a first-class column.
 
 ## Product decisions you should know
 
@@ -76,7 +79,9 @@ These are conventions the codebase already follows — stick to them unless the 
 - **Most Liked** is a synthetic first section (`MOST_LIKED_SLUG = "most-liked"`) picking top-8 by a deterministic placeholder score (`lib/fake-stats.ts`). Replace with real popularity when order data is available.
 - **Tags** (`lib/menu/tags.ts`): `favorite`, `spicy`, `vegan`. Stored as `MenuItem.tags String[]`. Favorite gets a green "⭐ Favorite" pill and floats to top; Spicy gets a red flame pill; Vegan gets an emerald leaf pill. Adding a new tag = update `ALL_MENU_TAGS` + `TAG_INFO` + the zod enum in both menu item APIs; no migration.
 - **Item cards**: text on left, 128px mobile / 160px desktop square image on right. When no image, the image column is omitted and the "+" button moves inline next to the price. **Don't render gray placeholders for missing images.**
-- **"+" button** has a 900ms green-checkmark confirmation animation on click (`AddToCartButton variant="icon"`).
+- **Item click → dialog**. Both clicking anywhere on a card and clicking the "+" button open `ItemDialog` (`app/(tenant)/menu/item-dialog.tsx`). The dialog shows the image (if any) at the top, name + description, then a list of modifier groups rendered as **radio buttons when `maxSelect === 1`** and **checkboxes otherwise** (`maxSelect > 1` caps the allowed count; `0` = unlimited). The footer has an "Add to cart" button with the live total (base + chosen deltas). The button is disabled until every `required` group has ≥1 pick. There is no more direct-add "+" animation — adding happens inside the dialog, which closes on add.
+- **Cart line key = item id + sorted choice ids** (`computeLineId` in `lib/stores/cart.ts`). Two "California Rolls" with the same modifiers stack; different modifier selections are separate lines. Cart state persists in localStorage under `sushi-online-cart` with `version: 2` — the version bump dropped the pre-modifier shape.
+- **Modifier selections flow through checkout** as `{ menuItemId, quantity, modifiers: [{ groupId, choices: [{ choiceId, name, price }] }] }`. `POST /api/create-payment-intent` **re-validates every selection server-side** against the stored `MenuItem.modifiers` (unknown group/choice → 400, over `maxSelect` → 400, missing a `required` group → 400), recomputes unit price from server-side prices only (no client-trusted prices), and persists a snapshot on `OrderItem.modifiers` so the confirmation page + admin can render the exact selections even if the menu changes later.
 
 ### Layout / chrome
 - Sticky header with logo (44px mobile / 56px desktop), restaurant name (`text-lg md:text-2xl`), Account/Sign-in link, CartBadge (popover trigger).
@@ -148,6 +153,7 @@ The codebase uses Tailwind classes directly (no custom design tokens beyond the 
 - Map iframe: `min-h-[200px] md:min-h-[260px] rounded-md border border-border`, `src={https://www.google.com/maps?q=<address>&output=embed}` (no API key needed)
 - Hours list: `grid grid-cols-[80px_1fr]` per day; today is `text-foreground`, other days `text-muted-foreground`
 - Status pill: `bg-green-50 text-green-700` when open, `bg-muted text-muted-foreground` when closed
+- **Social links row** (`SocialLinks` inline in `tenant-info.tsx`): rendered between the phone and hours blocks in the left column, only when `Restaurant.socials` has ≥1 entry. Icons are `h-8 w-8 rounded-full border border-border` (lucide `Instagram`/`Facebook`/`Twitter`/`Youtube`/`Linkedin`, plus an inline SVG for TikTok). Order: instagram, facebook, twitter, tiktok, youtube, linkedin. Hover: `hover:border-primary/40 hover:text-foreground`. Each is `<a target="_blank" rel="noopener noreferrer">` with `aria-label={SOCIAL_LABEL[platform]}`.
 
 ### Category nav (`app/(tenant)/menu/category-nav.tsx`)
 - **Mobile chips** (`CategoryChipsMobile`): `sticky top-14 z-10 -mx-4 border-b border-border bg-background/95 backdrop-blur md:hidden`; chips are `whitespace-nowrap border-b-2 px-4 py-3 text-xs font-semibold uppercase tracking-wider`; active has `border-foreground text-foreground`, inactive `border-transparent text-muted-foreground`
@@ -245,9 +251,17 @@ The codebase uses Tailwind classes directly (no custom design tokens beyond the 
    lsof -ti :3000 | xargs -r kill -9; pkill -9 -f next; rm -rf .next; npm run dev > /tmp/sushi-dev.log 2>&1 &
    ```
 
-6. **Visit** `http://<slug>.localhost:3000` (modern browsers resolve `*.localhost` to `127.0.0.1` automatically).
+6. **Socials are auto-populated** from `scraped/socials.json` during import — no separate step needed. That cache is built once with `npx tsx scripts/scrape-socials.ts --build-cache`; re-run when you want to refresh or after adding new scraped restaurants. For a one-off refresh on an already-imported tenant, use `--slug`, which does a fresh fetch and writes directly to the DB (bypasses the cache):
+   ```bash
+   npx tsx scripts/scrape-socials.ts --slug <slug> --dry-run  # see what it would find
+   npx tsx scripts/scrape-socials.ts --slug <slug>             # write
+   npx tsx scripts/scrape-socials.ts --build-cache             # rebuild scraped/socials.json (all tenants)
+   ```
+   Hit rate: ~11% of scraped restaurants (45/407) have recognizable socials on their static landing HTML. Many small-operator sites have none or render them via JS (which the regex-based scraper can't see). The UI gracefully hides the icon row when empty. A profile-root URL is preferred over a deep-link (e.g. `instagram.com/foo` beats `instagram.com/p/<id>`). **Watch out for false positives**: some WordPress/Wix templates ship with placeholder social links in the footer — a handful of cached entries point at the theme author's socials rather than the restaurant's. If you spot one, fix it with a `/admin/settings` edit or a manual `UPDATE "Restaurant" SET socials='{...}'::jsonb WHERE slug='...';`.
 
-7. **Grant tenant admin access** (optional). By default a scraped tenant has no `RestaurantMember` rows — only superadmins can manage it. To let a specific user in:
+7. **Visit** `http://<slug>.localhost:3000` (modern browsers resolve `*.localhost` to `127.0.0.1` automatically).
+
+8. **Grant tenant admin access** (optional). By default a scraped tenant has no `RestaurantMember` rows — only superadmins can manage it. To let a specific user in:
    ```sql
    INSERT INTO "RestaurantMember" (id, "userId", "restaurantId", role, "createdAt")
    VALUES (gen_random_uuid()::text, '<userId>', '<restaurantId>', 'admin', NOW());
@@ -276,8 +290,11 @@ The codebase uses Tailwind classes directly (no custom design tokens beyond the 
 
 - `scripts/import-from-scrape.ts` — the importer. Main entry points: `importOne` (top-level), `importLocation` (per-location), `upsertBrand`. All the field-extraction helpers (`hoursFromLocation`, `formatPhone`, `cleanRestaurantName`, `cleanLocationName`, `isProductImportable`) live here.
 - `scripts/scrape_codefusion.py` — the scraper. Resumable; uses the public Firebase API key that ships with the CodeFusion client. Not authenticated as any user. Re-run is safe.
+- `scripts/scrape-socials.ts` — extracts social URLs from tenant landing pages. Two main modes: `--build-cache` walks `scraped/index.json`, dedupes by URL, fetches with bounded concurrency (`--concurrency N`, default 10), and writes `scraped/socials.json` keyed by CodeFusion restaurant `_id`; the importer reads from this cache. `--slug <slug>` does a live fetch and writes directly to the DB (refresh). Also: `--all [--missing-only]` (live backfill across all DB rows), `--url <url>` (ad-hoc), `--dry-run`. Prefers profile-root URLs over deep-links (posts/reels/videos) and strips tracking params.
+- `scraped/socials.json` — pre-built cache of social URLs per scraped CodeFusion restaurant. Generated by `--build-cache`. Safe to delete and regenerate; safe to commit.
 - `prisma/schema.prisma` — the data model.
 - `lib/tenant/display.ts` — `displayTenantName`, `tenantBannerUrl`.
 - `lib/tenant/hours.ts` — `parseHours`, `openStatus`, `groupByDay`.
+- `lib/tenant/socials.ts` — `SOCIAL_PLATFORMS`, `parseSocials(json)`, `SOCIAL_LABEL`. Platforms currently recognized: instagram, facebook, twitter, tiktok, youtube, linkedin.
 - `lib/menu/tags.ts` — tag registry.
 - `lib/fake-stats.ts` — placeholder popularity; replace when real order data exists.

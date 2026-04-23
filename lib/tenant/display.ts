@@ -1,13 +1,21 @@
 type TenantNameSource = { name: string; locationName?: string | null };
 
 /**
- * Formats a tenant's display name. For multi-location brands, pass a
- * non-empty locationName to get "Brand - Location"; standalone restaurants
- * get just the base name.
+ * Formats a tenant's display name. Appends `locationName` only when it adds
+ * information — if the location name is already part of the restaurant name
+ * (e.g. "Sushi U Burnaby" + "Burnaby") we'd just produce "Sushi U Burnaby -
+ * Burnaby", which is noise.
  */
 export function displayTenantName(tenant: TenantNameSource): string {
+  const name = tenant.name.trim();
   const loc = tenant.locationName?.trim();
-  return loc ? `${tenant.name} - ${loc}` : tenant.name;
+  if (!loc) return name;
+  const needle = loc.toLowerCase();
+  const haystack = name.toLowerCase();
+  // Word-boundary-ish check so "Main" doesn't collide with "Remainder".
+  const re = new RegExp(`(?:^|\\W)${needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:\\W|$)`);
+  if (re.test(haystack)) return name;
+  return `${name} - ${loc}`;
 }
 
 /**

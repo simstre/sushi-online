@@ -20,6 +20,31 @@ const prisma = new PrismaClient();
 const SCRAPED = path.join(process.cwd(), "scraped");
 const RESTAURANTS_DIR = path.join(SCRAPED, "restaurants");
 const INDEX_PATH = path.join(SCRAPED, "index.json");
+const SOCIALS_CACHE_PATH = path.join(SCRAPED, "socials.json");
+
+// Built by `scripts/scrape-socials.ts --build-cache` — one entry per CodeFusion
+// restaurant `_id`. Missing cache is not an error; the importer just won't
+// populate `Restaurant.socials`.
+type SocialsCacheEntry = {
+  landingUrl: string;
+  scrapedAt: string;
+  socials: Record<string, string>;
+  error?: string;
+};
+let _socialsCache: Record<string, SocialsCacheEntry> | null | undefined;
+function getSocialsFromCache(restaurantDocId: string): Record<string, string> | null {
+  if (_socialsCache === undefined) {
+    try {
+      const raw = JSON.parse(fs.readFileSync(SOCIALS_CACHE_PATH, "utf8"));
+      _socialsCache = raw.byId ?? null;
+    } catch {
+      _socialsCache = null;
+    }
+  }
+  const entry = _socialsCache?.[restaurantDocId];
+  if (!entry || !entry.socials || Object.keys(entry.socials).length === 0) return null;
+  return entry.socials;
+}
 
 type CfProduct = {
   _id: string;
@@ -31,6 +56,7 @@ type CfProduct = {
   activeAfter?: number;
   active?: boolean;
   inactive?: boolean;
+  modifiers?: string[]; // modifier group IDs to resolve against menu.modifiers[]
 };
 type CfCategory = {
   _id: string;
@@ -162,9 +188,73 @@ type Scraped = {
   menusByLocation: Record<string, {
     categories: CfCategory[];
     products: CfProduct[];
-    modifiers: unknown[];
+    modifiers: CfModifierGroup[];
   }>;
 };
+
+type CfModifierChoice = {
+  _id?: string;
+  name: string;
+  price?: number;
+  posId?: string;
+  posName?: string;
+  selected?: boolean;
+  activeAfter?: number;
+  inactive?: boolean;
+};
+type CfModifierGroup = {
+  _id: string;
+  name: string;
+  required?: 0 | 1;
+  maxSelect?: number;
+  choiceCount?: number;
+  choices?: CfModifierChoice[];
+  inactive?: boolean;
+};
+
+type MaterializedChoice = { id: string; name: string; price: number };
+type MaterializedGroup = {
+  id: string;
+  name: string;
+  required: boolean;
+  // `1` = radio (single choice). `0` = unlimited. Other positive ints = capped multi-select.
+  maxSelect: number;
+  choices: MaterializedChoice[];
+};
+
+function materializeModifiers(
+  groupIds: string[] | undefined,
+  groupsById: Map<string, CfModifierGroup>,
+  now: number,
+): MaterializedGroup[] {
+  if (!Array.isArray(groupIds) || groupIds.length === 0) return [];
+  const out: MaterializedGroup[] = [];
+  for (const gid of groupIds) {
+    const g = groupsById.get(gid);
+    if (!g || g.inactive === true) continue;
+    const choices: MaterializedChoice[] = [];
+    for (const [i, c] of (g.choices ?? []).entries()) {
+      if (c.inactive === true) continue;
+      if (typeof c.activeAfter === "number" && c.activeAfter > now) continue;
+      const priceCents = Math.round((c.price ?? 0) * 100);
+      if (!Number.isFinite(priceCents)) continue;
+      // CodeFusion choices don't always have an _id, and `posId` gets reused
+      // across choices in the same group (e.g. all "protein" options share one
+      // posId). Always suffix with the index so every choice has a unique id.
+      const id = c._id ? c._id : `${gid}:${i}`;
+      choices.push({ id, name: c.name, price: priceCents });
+    }
+    if (choices.length === 0) continue;
+    out.push({
+      id: g._id,
+      name: g.name,
+      required: g.required === 1,
+      maxSelect: typeof g.maxSelect === "number" && g.maxSelect > 0 ? g.maxSelect : 0,
+      choices,
+    });
+  }
+  return out;
+}
 
 function parseArgs(argv: string[]) {
   const args: Record<string, string | boolean> = {};
@@ -233,10 +323,10 @@ async function upsertBrand(r: Scraped["restaurant"]) {
         data: { landingUrl: r.landingUrl },
       });
     }
-    if (!existing.logoUrl && (r.images?.logoTitle || r.images?.logo)) {
+    if (!existing.logoUrl && (r.images?.logo || r.images?.logoTitle)) {
       await prisma.brand.update({
         where: { id: existing.id },
-        data: { logoUrl: r.images?.logoTitle || r.images?.logo || null },
+        data: { logoUrl: r.images?.logo || r.images?.logoTitle || null },
       });
     }
     return existing;
@@ -247,7 +337,7 @@ async function upsertBrand(r: Scraped["restaurant"]) {
       name: brandName,
       slug: brandSlug,
       landingUrl: r.landingUrl || null,
-      logoUrl: r.images?.logoTitle || r.images?.logo || null,
+      logoUrl: r.images?.logo || r.images?.logoTitle || null,
     },
   });
 }
@@ -267,6 +357,9 @@ async function importLocation(
 
   const categoriesById = new Map(menuData.categories.map((c) => [c._id, c]));
   const productsById = new Map(menuData.products.map((p) => [p._id, p]));
+  const modifierGroupsById = new Map(
+    (menuData.modifiers ?? []).map((m) => [m._id, m]),
+  );
 
   // Category order: union of categoryOrder across every active menu on the location,
   // in the same priority order the live client uses (menu9..menu1, default last).
@@ -304,7 +397,7 @@ async function importLocation(
     name: cleanRestaurantName(r.name),
     locationName: cleanLocationName(loc.locationName),
     slug,
-    logoUrl: r.images?.logoTitle || r.images?.logo || null,
+    logoUrl: r.images?.logo || r.images?.logoTitle || null,
     bannerUrl: r.images?.menuHeader || r.images?.mainBg || null,
     currency: "CAD",
     address: loc.address?.trim() || null,
@@ -313,6 +406,10 @@ async function importLocation(
     externalStripeAccountId: loc.stripeAccountId || null,
     landingUrl: r.landingUrl || null,
     googleMapsUrl: loc.googleMapsUrl || null,
+    socials: (() => {
+      const s = getSocialsFromCache(scraped._id);
+      return s ? (s as unknown as Prisma.InputJsonValue) : Prisma.JsonNull;
+    })(),
     welcomeMessageTitle: loc.welcomeMessage?.title?.trim() || null,
     welcomeMessageBody: loc.welcomeMessage?.body?.trim() || null,
     minOrder: typeof loc.minOrder === "number" && loc.minOrder > 0
@@ -345,6 +442,7 @@ async function importLocation(
       imageUrl: _i,
       ...sourceRest
     } = p as CfProduct & Record<string, unknown>;
+    const groups = materializeModifiers(p.modifiers, modifierGroupsById, now);
     return {
       name: p.name,
       description: p.description || null,
@@ -356,6 +454,9 @@ async function importLocation(
         ? (p as { taxRate?: number }).taxRate!
         : null,
       source: sourceRest as unknown as Prisma.InputJsonValue,
+      modifiers: groups.length > 0
+        ? (groups as unknown as Prisma.InputJsonValue)
+        : Prisma.JsonNull,
     };
   };
 

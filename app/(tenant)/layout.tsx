@@ -1,11 +1,18 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Poppins } from "next/font/google";
 import { CircleUserRound } from "lucide-react";
 import { getTenantFromHeaders } from "@/lib/tenant/resolve";
 import { displayTenantName } from "@/lib/tenant/display";
 import { getCurrentUser } from "@/lib/auth/require";
 import { CartBadge } from "./cart-badge";
+
+const tenantNameFont = Poppins({
+  subsets: ["latin"],
+  weight: ["700"],
+  display: "swap",
+});
 
 export const dynamic = "force-dynamic";
 
@@ -74,7 +81,9 @@ export default async function TenantLayout({ children }: { children: React.React
                 aria-hidden
               />
             )}
-            <span className="truncate text-lg font-semibold md:text-2xl">
+            <span
+              className={`${tenantNameFont.className} truncate text-lg font-bold md:text-2xl`}
+            >
               {displayTenantName(tenant)}
             </span>
           </Link>

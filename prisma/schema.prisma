@@ -39,6 +39,7 @@ model Restaurant {
   // Customer-facing extras from scrape
   landingUrl              String?
   googleMapsUrl           String?
+  socials                 Json?
   welcomeMessageTitle     String?
   welcomeMessageBody      String?
 
@@ -102,6 +103,11 @@ model MenuItem {
   taxRate     Float?
   source      Json?
 
+  // Materialized modifier groups for checkout UI. Array of:
+  //   { id, name, required, maxSelect, choices: [{ id, name, price (cents) }] }
+  // Populated by the importer from the menu's modifier registry.
+  modifiers   Json?
+
   // Admin-curated markers. Known values: favorite, spicy, vegan.
   tags        String[] @default([])
 
@@ -135,6 +141,11 @@ model OrderItem {
   menuItemId  String
   quantity    Int
   price       Int
+
+  // Snapshot of the customer's modifier selections for this line. Shape:
+  //   [{ groupId, groupName, choices: [{ id, name, price (cents) }] }]
+  // `price` is the total unit price (base + deltas) already baked into `price`.
+  modifiers   Json?
 
   order       Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 

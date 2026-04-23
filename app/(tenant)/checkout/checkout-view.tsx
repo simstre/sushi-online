@@ -27,7 +27,7 @@ export function CheckoutView({
   const [error, setError] = useState<string | null>(null);
 
   const total = useMemo(
-    () => items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+    () => items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0),
     [items],
   );
 
@@ -41,7 +41,11 @@ export function CheckoutView({
         body: JSON.stringify({
           customerName: name,
           customerPhone: phone,
-          items: items.map((i) => ({ id: i.id, quantity: i.quantity })),
+          items: items.map((i) => ({
+            menuItemId: i.menuItemId,
+            quantity: i.quantity,
+            modifiers: i.modifiers,
+          })),
         }),
       });
       if (!res.ok) throw new Error((await res.json()).error ?? "Unable to start payment");

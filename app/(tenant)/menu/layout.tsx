@@ -33,6 +33,7 @@ export default async function MenuLayout({ children }: { children: React.ReactNo
           phone: tenant.phone,
           businessHours: tenant.businessHours,
           googleMapsUrl: tenant.googleMapsUrl,
+          socials: tenant.socials,
         }}
       />
       {children}

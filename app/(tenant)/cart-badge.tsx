@@ -21,7 +21,7 @@ export function CartBadge({ currency = "CAD", minOrder = 0 }: Props) {
   const remove = useCart((s) => s.remove);
 
   const count = items.reduce((sum, i) => sum + i.quantity, 0);
-  const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const subtotal = items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
   const shortfall = minOrder > 0 ? Math.max(0, minOrder - subtotal) : 0;
   const meetsMin = shortfall === 0;
 
@@ -93,48 +93,58 @@ export function CartBadge({ currency = "CAD", minOrder = 0 }: Props) {
               </p>
             ) : (
               <ul className="divide-y divide-border">
-                {items.map((item) => (
-                  <li key={item.id} className="flex items-center gap-2 py-2">
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{item.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatMoney(item.price, currency)}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-0.5">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-7 w-7"
-                        onClick={() => setQuantity(item.id, item.quantity - 1)}
-                        aria-label="Decrease"
-                      >
-                        −
-                      </Button>
-                      <span className="w-5 text-center text-xs tabular-nums">
-                        {item.quantity}
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-7 w-7"
-                        onClick={() => setQuantity(item.id, item.quantity + 1)}
-                        aria-label="Increase"
-                      >
-                        +
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7"
-                        onClick={() => remove(item.id)}
-                        aria-label="Remove"
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </li>
-                ))}
+                {items.map((item) => {
+                  const mods = item.modifiers.flatMap((g) =>
+                    g.choices.map((c) => c.name),
+                  );
+                  return (
+                    <li key={item.lineId} className="flex items-start gap-2 py-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium">{item.name}</p>
+                        {mods.length > 0 && (
+                          <p className="line-clamp-2 text-[11px] text-muted-foreground">
+                            {mods.join(", ")}
+                          </p>
+                        )}
+                        <p className="text-xs text-muted-foreground">
+                          {formatMoney(item.unitPrice, currency)}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-0.5">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-7 w-7"
+                          onClick={() => setQuantity(item.lineId, item.quantity - 1)}
+                          aria-label="Decrease"
+                        >
+                          −
+                        </Button>
+                        <span className="w-5 text-center text-xs tabular-nums">
+                          {item.quantity}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-7 w-7"
+                          onClick={() => setQuantity(item.lineId, item.quantity + 1)}
+                          aria-label="Increase"
+                        >
+                          +
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7"
+                          onClick={() => remove(item.lineId)}
+                          aria-label="Remove"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>

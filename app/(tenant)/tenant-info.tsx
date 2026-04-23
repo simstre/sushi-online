@@ -1,7 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Clock, MapPin, Phone } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  Facebook,
+  Instagram,
+  Linkedin,
+  MapPin,
+  Phone,
+  Twitter,
+  Youtube,
+} from "lucide-react";
 import {
   DAY_FULL,
   formatTime,
@@ -9,6 +20,13 @@ import {
   openStatus,
   parseHours,
 } from "@/lib/tenant/hours";
+import {
+  SOCIAL_LABEL,
+  SOCIAL_PLATFORMS,
+  type SocialPlatform,
+  type Socials,
+  parseSocials,
+} from "@/lib/tenant/socials";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -17,18 +35,80 @@ type Props = {
     phone: string | null;
     businessHours: unknown;
     googleMapsUrl?: string | null;
+    socials?: unknown;
   };
 };
 
+function TikTokIcon({ className }: { className?: string }) {
+  // lucide has no TikTok glyph, so inline a simple one.
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+    >
+      <path d="M21 8.5a7.5 7.5 0 0 1-4.37-1.4v7.9a6 6 0 1 1-6-6c.35 0 .69.03 1.02.09v3.12a3 3 0 1 0 2.1 2.86V2h3a4.5 4.5 0 0 0 4.25 4.25V8.5z" />
+    </svg>
+  );
+}
+
+const SOCIAL_ICON: Record<SocialPlatform, (p: { className?: string }) => JSX.Element> = {
+  instagram: (p) => <Instagram {...p} />,
+  facebook: (p) => <Facebook {...p} />,
+  twitter: (p) => <Twitter {...p} />,
+  tiktok: (p) => <TikTokIcon {...p} />,
+  youtube: (p) => <Youtube {...p} />,
+  linkedin: (p) => <Linkedin {...p} />,
+};
+
+function SocialLinks({ socials }: { socials: Socials }) {
+  const entries = SOCIAL_PLATFORMS.filter((p) => socials[p]);
+  if (entries.length === 0) return null;
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {entries.map((p) => {
+        const Icon = SOCIAL_ICON[p];
+        return (
+          <a
+            key={p}
+            href={socials[p]}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={SOCIAL_LABEL[p]}
+            title={SOCIAL_LABEL[p]}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
+          >
+            <Icon className="h-4 w-4" />
+          </a>
+        );
+      })}
+    </div>
+  );
+}
+
 export function TenantInfo({ tenant }: Props) {
   const hours = parseHours(tenant.businessHours);
-  const hasAny = tenant.address || tenant.phone || hours.length > 0;
+  const socials = parseSocials(tenant.socials);
+  const hasAny =
+    tenant.address ||
+    tenant.phone ||
+    hours.length > 0 ||
+    Object.keys(socials).length > 0;
   if (!hasAny) return null;
 
   const status = hours.length > 0 ? openStatus(hours) : null;
   const todayDay = new Date().getDay();
 
-  return <InfoBox tenant={tenant} hours={hours} status={status} todayDay={todayDay} />;
+  return (
+    <InfoBox
+      tenant={tenant}
+      hours={hours}
+      status={status}
+      todayDay={todayDay}
+      socials={socials}
+    />
+  );
 }
 
 function InfoBox({
@@ -36,11 +116,13 @@ function InfoBox({
   hours,
   status,
   todayDay,
+  socials,
 }: {
   tenant: Props["tenant"];
   hours: ReturnType<typeof parseHours>;
   status: { open: boolean; label: string } | null;
   todayDay: number;
+  socials: Socials;
 }) {
   const [mobileExpanded, setMobileExpanded] = useState(false);
 
@@ -131,6 +213,12 @@ function InfoBox({
                     {tenant.phone}
                   </a>
                 </div>
+              </div>
+            )}
+
+            {Object.keys(socials).length > 0 && (
+              <div className="pt-1">
+                <SocialLinks socials={socials} />
               </div>
             )}
 

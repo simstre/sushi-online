@@ -15,7 +15,7 @@ export function CartView({
   const items = useCart((s) => s.items);
   const setQuantity = useCart((s) => s.setQuantity);
   const remove = useCart((s) => s.remove);
-  const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const total = items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
   const shortfall = minOrder > 0 ? Math.max(0, minOrder - total) : 0;
   const meetsMin = shortfall === 0;
 
@@ -35,17 +35,29 @@ export function CartView({
       <h1 className="text-2xl font-semibold">Cart</h1>
       <ul className="divide-y divide-border rounded-lg border border-border bg-background">
         {items.map((item) => (
-          <li key={item.id} className="flex items-center justify-between gap-3 p-3">
+          <li key={item.lineId} className="flex items-start justify-between gap-3 p-3">
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium">{item.name}</p>
-              <p className="text-sm text-muted-foreground">{formatMoney(item.price, currency)}</p>
+              {item.modifiers.length > 0 && (
+                <ul className="mt-0.5 space-y-0.5 text-xs text-muted-foreground">
+                  {item.modifiers.map((g) => (
+                    <li key={g.groupId} className="truncate">
+                      <span className="font-medium">{g.groupName}:</span>{" "}
+                      {g.choices.map((c) => c.name).join(", ")}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <p className="text-sm text-muted-foreground">
+                {formatMoney(item.unitPrice, currency)}
+              </p>
             </div>
             <div className="flex items-center gap-1">
               <Button
                 variant="outline"
                 size="icon"
                 className="h-9 w-9"
-                onClick={() => setQuantity(item.id, item.quantity - 1)}
+                onClick={() => setQuantity(item.lineId, item.quantity - 1)}
                 aria-label="Decrease"
               >
                 −
@@ -55,7 +67,7 @@ export function CartView({
                 variant="outline"
                 size="icon"
                 className="h-9 w-9"
-                onClick={() => setQuantity(item.id, item.quantity + 1)}
+                onClick={() => setQuantity(item.lineId, item.quantity + 1)}
                 aria-label="Increase"
               >
                 +
@@ -64,7 +76,7 @@ export function CartView({
                 variant="ghost"
                 size="icon"
                 className="h-9 w-9"
-                onClick={() => remove(item.id)}
+                onClick={() => remove(item.lineId)}
                 aria-label="Remove"
               >
                 ✕
