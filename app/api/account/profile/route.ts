@@ -35,6 +35,12 @@ export async function PATCH(req: Request) {
   if (typeof name === "string") data.name = name;
 
   if (newPassword) {
+    if (!user.passwordHash) {
+      return NextResponse.json(
+        { error: "This account has no password set" },
+        { status: 400 },
+      );
+    }
     const ok = await bcrypt.compare(currentPassword!, user.passwordHash);
     if (!ok) {
       return NextResponse.json({ error: "Current password is incorrect" }, { status: 400 });
