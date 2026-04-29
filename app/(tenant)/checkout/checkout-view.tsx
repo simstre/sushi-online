@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { CheckoutForm } from "./checkout-form";
@@ -15,9 +16,15 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY 
 export function CheckoutView({
   initialName = "",
   initialEmail = "",
+  isSignedIn = false,
+  signupHref = "/signup",
+  loginHref = "/login",
 }: {
   initialName?: string;
   initialEmail?: string;
+  isSignedIn?: boolean;
+  signupHref?: string;
+  loginHref?: string;
 }) {
   const items = useCart((s) => s.items);
   const [name, setName] = useState(initialName);
@@ -96,6 +103,20 @@ export function CheckoutView({
           A few details and we&apos;ll send your order to the kitchen.
         </p>
       </div>
+      {!isSignedIn && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-muted/40 px-4 py-3 text-sm">
+          <span className="text-muted-foreground">
+            Faster next time:{" "}
+            <Link href={signupHref} className="font-medium text-foreground underline">
+              create an account
+            </Link>{" "}
+            and your details auto-fill. Cart stays put.
+          </span>
+          <Link href={loginHref} className="whitespace-nowrap text-xs text-muted-foreground underline hover:text-foreground">
+            Already have one? Sign in
+          </Link>
+        </div>
+      )}
       <div className="space-y-3">
         <label className="block text-sm">
           Name
