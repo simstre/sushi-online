@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db/prisma";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatMoney } from "@/lib/utils";
 import { displayTenantName } from "@/lib/tenant/display";
+import { storefrontUrl } from "@/lib/tenant/url";
 import { RestaurantControls } from "./restaurant-controls";
 
 export const dynamic = "force-dynamic";
@@ -75,8 +76,6 @@ export default async function PlatformRestaurantDetail({
   const last30Count = paidLast30._count;
   const aov = last30Count > 0 ? Math.round(last30Revenue / last30Count) : 0;
 
-  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "localhost:3000";
-  const proto = rootDomain.startsWith("localhost") ? "http" : "https";
 
   return (
     <div className="space-y-8">
@@ -120,7 +119,7 @@ export default async function PlatformRestaurantDetail({
         <div className="flex flex-col items-end gap-2 text-sm">
           <div className="flex gap-3">
             <a
-              href={`${proto}://${restaurant.slug}.${rootDomain}`}
+              href={storefrontUrl(restaurant.slug)}
               target="_blank"
               rel="noopener noreferrer"
               className="underline"
@@ -128,7 +127,7 @@ export default async function PlatformRestaurantDetail({
               Storefront ↗
             </a>
             <a
-              href={`${proto}://${restaurant.slug}.${rootDomain}/admin/orders`}
+              href={storefrontUrl(restaurant.slug, "/admin/orders")}
               target="_blank"
               rel="noopener noreferrer"
               className="underline"

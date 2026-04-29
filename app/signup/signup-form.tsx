@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { tenantFetch } from "@/lib/tenant/client-url";
 
 export function SignupForm({ callbackUrl }: { callbackUrl: string }) {
   const [name, setName] = useState("");
@@ -17,7 +18,7 @@ export function SignupForm({ callbackUrl }: { callbackUrl: string }) {
     setBusy(true);
     setError(null);
 
-    const signup = await fetch("/api/auth/signup", {
+    const signup = await tenantFetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, name, password }),

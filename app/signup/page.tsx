@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth/require";
 import { getTenantFromHeaders } from "@/lib/tenant/resolve";
+import { tenantHref } from "@/lib/tenant/url";
 import { SignupForm } from "./signup-form";
 
 export const dynamic = "force-dynamic";
@@ -15,8 +16,10 @@ export default async function SignupPage({
   const tenant = await getTenantFromHeaders();
   if (!tenant) notFound();
 
+  const accountHref = await tenantHref("/account");
+  const loginHref = await tenantHref("/login");
   const user = await getCurrentUser();
-  if (user) redirect(callbackUrl ?? "/account");
+  if (user) redirect(callbackUrl ?? accountHref);
 
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center p-6">
@@ -24,10 +27,10 @@ export default async function SignupPage({
       <p className="mt-1 text-sm text-muted-foreground">
         Place orders faster and view your history.
       </p>
-      <SignupForm callbackUrl={callbackUrl ?? "/account"} />
+      <SignupForm callbackUrl={callbackUrl ?? accountHref} />
       <p className="mt-4 text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="underline">
+        <Link href={loginHref} className="underline">
           Sign in
         </Link>
       </p>

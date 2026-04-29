@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db/prisma";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatMoney } from "@/lib/utils";
+import { storefrontUrl } from "@/lib/tenant/url";
 
 export const dynamic = "force-dynamic";
 
@@ -35,8 +36,6 @@ export default async function PlatformDashboard() {
     }),
   ]);
 
-  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "localhost:3000";
-  const proto = rootDomain.startsWith("localhost") ? "http" : "https";
 
   return (
     <div className="space-y-8">
@@ -94,7 +93,7 @@ export default async function PlatformDashboard() {
                 </p>
               </div>
               <a
-                href={`${proto}://${r.slug}.${rootDomain}`}
+                href={storefrontUrl(r.slug)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs underline"

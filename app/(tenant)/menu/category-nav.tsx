@@ -3,6 +3,18 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  currentSlugFromPath,
+  tenantPath,
+} from "@/lib/tenant/client-url";
+
+function menuHref(categoryId: string): string {
+  const slug =
+    typeof window !== "undefined"
+      ? currentSlugFromPath(window.location.pathname)
+      : null;
+  return tenantPath(`/menu/${categoryId}`, slug);
+}
 
 type Category = { id: string; name: string; count: number };
 
@@ -29,7 +41,7 @@ function useActiveSection(initialActiveId: string): [string, (id: string) => voi
           const id = visible[0].target.id.replace(/^cat-/, "");
           setActiveId(id);
           // Keep URL in sync with the section actually being read.
-          window.history.replaceState(null, "", `/menu/${id}`);
+          window.history.replaceState(null, "", menuHref(id));
         }
       },
       { rootMargin: "-25% 0px -60% 0px", threshold: 0 },
@@ -47,7 +59,7 @@ function scrollToCategory(id: string, setActive: (id: string) => void) {
   const el = document.getElementById(`cat-${id}`);
   if (!el) return;
   el.scrollIntoView({ behavior: "smooth", block: "start" });
-  window.history.replaceState(null, "", `/menu/${id}`);
+  window.history.replaceState(null, "", menuHref(id));
   setActive(id);
 }
 
@@ -104,7 +116,7 @@ export function CategoryChipsMobile({
               return (
                 <a
                   key={c.id}
-                  href={`/menu/${c.id}`}
+                  href={menuHref(c.id)}
                   ref={active ? activeRef : undefined}
                   onClick={(e) => {
                     e.preventDefault();
@@ -181,7 +193,7 @@ export function CategorySidebar({
             return (
               <li key={c.id}>
                 <a
-                  href={`/menu/${c.id}`}
+                  href={menuHref(c.id)}
                   onClick={(e) => {
                     e.preventDefault();
                     scrollToCategory(c.id, setActiveId);

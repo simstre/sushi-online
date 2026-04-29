@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { tenantFetch } from "@/lib/tenant/client-url";
 
 type Mode = "signin" | "signup";
 
@@ -21,7 +22,7 @@ export function AdminAuthForm({ callbackUrl }: { callbackUrl: string }) {
     setError(null);
 
     if (mode === "signup") {
-      const signup = await fetch("/api/auth/staff-signup", {
+      const signup = await tenantFetch("/api/auth/staff-signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, name, password }),

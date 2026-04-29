@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 import { prisma } from "@/lib/db/prisma";
 import { displayTenantName } from "@/lib/tenant/display";
+import { tenantHref } from "@/lib/tenant/url";
 import { formatMoney } from "@/lib/utils";
 import { renderOrderModifiers } from "@/lib/order/modifiers";
 
@@ -20,6 +21,8 @@ export default async function ConfirmationPage({
       })
     : null;
 
+  const menuHref = await tenantHref("/menu");
+
   if (!order) {
     return (
       <div className="mx-auto max-w-md py-16 text-center">
@@ -28,7 +31,7 @@ export default async function ConfirmationPage({
           We couldn&apos;t locate your order. Please contact the restaurant if you were
           charged.
         </p>
-        <Link href="/menu" className="mt-4 inline-block underline">
+        <Link href={menuHref} className="mt-4 inline-block underline">
           Back to menu
         </Link>
       </div>
@@ -130,7 +133,7 @@ export default async function ConfirmationPage({
         </div>
       </div>
 
-      <Link href="/menu" className="inline-block underline">
+      <Link href={menuHref} className="inline-block underline">
         Order again
       </Link>
     </div>

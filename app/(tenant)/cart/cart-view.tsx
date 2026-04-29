@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useCart } from "@/lib/stores/cart";
 import { Button } from "@/components/ui/button";
+import { TenantLink } from "@/components/tenant-link";
 import { formatMoney } from "@/lib/utils";
 
 export function CartView({
@@ -28,9 +28,9 @@ export function CartView({
         <p className="mt-2 text-sm text-muted-foreground">
           Pick something from the menu to get started.
         </p>
-        <Link href="/menu" className="mt-5 inline-block">
+        <TenantLink href="/menu" className="mt-5 inline-block">
           <Button variant="outline">Browse the menu</Button>
-        </Link>
+        </TenantLink>
       </div>
     );
   }
@@ -110,11 +110,11 @@ export function CartView({
       )}
 
       {meetsMin ? (
-        <Link href="/checkout" className="block">
+        <TenantLink href="/checkout" className="block">
           <Button className="w-full" size="lg">
             Continue to checkout
           </Button>
-        </Link>
+        </TenantLink>
       ) : (
         <Button className="w-full" size="lg" disabled>
           Continue to checkout

@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { tenantFetch } from "@/lib/tenant/client-url";
 
 const STATUSES = ["pending", "paid", "preparing", "ready", "completed", "failed", "cancelled"];
 
@@ -15,7 +16,7 @@ export function OrderStatusSelect({ orderId, status }: { orderId: string; status
     const next = e.target.value;
     setValue(next);
     setError(null);
-    const res = await fetch(`/api/admin/orders/${orderId}`, {
+    const res = await tenantFetch(`/api/admin/orders/${orderId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: next }),

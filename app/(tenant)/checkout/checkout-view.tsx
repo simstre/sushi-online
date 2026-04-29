@@ -7,6 +7,7 @@ import { CheckoutForm } from "./checkout-form";
 import { useCart } from "@/lib/stores/cart";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { tenantFetch } from "@/lib/tenant/client-url";
 import { formatMoney } from "@/lib/utils";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "");
@@ -36,7 +37,7 @@ export function CheckoutView({
     setError(null);
     setSubmitting(true);
     try {
-      const res = await fetch("/api/create-payment-intent", {
+      const res = await tenantFetch("/api/create-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

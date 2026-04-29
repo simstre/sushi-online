@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { tenantFetch } from "@/lib/tenant/client-url";
 
 type Member = {
   id: string;
@@ -33,7 +34,7 @@ export function TeamList({
 
   async function patch(id: string, body: Record<string, unknown>) {
     setBusyId(id);
-    const res = await fetch(`/api/admin/members/${id}`, {
+    const res = await tenantFetch(`/api/admin/members/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -50,7 +51,7 @@ export function TeamList({
   async function remove(id: string, confirmText: string) {
     if (!confirm(confirmText)) return;
     setBusyId(id);
-    const res = await fetch(`/api/admin/members/${id}`, { method: "DELETE" });
+    const res = await tenantFetch(`/api/admin/members/${id}`, { method: "DELETE" });
     setBusyId(null);
     if (!res.ok) {
       const e = await res.json().catch(() => ({}));

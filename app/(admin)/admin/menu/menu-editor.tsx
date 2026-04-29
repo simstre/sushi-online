@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ImageUpload } from "@/components/image-upload";
 import { cn, formatMoney } from "@/lib/utils";
 import {
+import { tenantFetch } from "@/lib/tenant/client-url";
   ALL_MENU_TAGS,
   TAG_INFO,
   type MenuItemTag,
@@ -46,7 +47,7 @@ export function MenuEditor({ categories, currency }: { categories: Category[]; c
 
   async function call(path: string, init: RequestInit) {
     setError(null);
-    const res = await fetch(path, {
+    const res = await tenantFetch(path, {
       ...init,
       headers: { "Content-Type": "application/json", ...(init.headers ?? {}) },
     });

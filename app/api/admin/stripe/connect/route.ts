@@ -3,6 +3,7 @@ import { stripe } from "@/lib/stripe/client";
 import { prisma } from "@/lib/db/prisma";
 import { requireTenantOwner } from "@/lib/auth/require";
 import { getTenantFromHeaders } from "@/lib/tenant/resolve";
+import { storefrontUrl } from "@/lib/tenant/url";
 
 export const runtime = "nodejs";
 
@@ -15,7 +16,7 @@ export const runtime = "nodejs";
  *
  * Owner-only (admin role or superadmin); staff cannot connect Stripe.
  */
-export async function POST(req: Request) {
+export async function POST() {
   const tenant = await getTenantFromHeaders();
   if (!tenant) return NextResponse.json({ error: "No tenant" }, { status: 404 });
 
@@ -44,12 +45,10 @@ export async function POST(req: Request) {
     });
   }
 
-  // Build refresh / return URLs against the tenant's host so the user lands
-  // back on the same admin they started from.
-  const url = new URL(req.url);
-  const origin = `${url.protocol}//${url.host}`;
-  const refreshUrl = `${origin}/admin/settings?stripe=refresh`;
-  const returnUrl = `${origin}/admin/settings?stripe=return`;
+  // Build refresh / return URLs against the storefront base URL — picks the
+  // right host shape for subdomain vs path mode multi-tenancy.
+  const refreshUrl = storefrontUrl(tenant.slug, "/admin/settings?stripe=refresh");
+  const returnUrl = storefrontUrl(tenant.slug, "/admin/settings?stripe=return");
 
   const link = await stripe.accountLinks.create({
     account: accountId,

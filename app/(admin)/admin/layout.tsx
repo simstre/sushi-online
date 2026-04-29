@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getTenantFromHeaders } from "@/lib/tenant/resolve";
 import { displayTenantName } from "@/lib/tenant/display";
+import { tenantHref } from "@/lib/tenant/url";
 import {
   getCurrentUser,
   getTenantMembershipState,
@@ -16,9 +17,24 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!tenant) notFound();
 
   const user = await getCurrentUser();
-  if (!user) redirect(`/admin-login?callbackUrl=/admin/orders`);
+  if (!user) {
+    const callbackUrl = await tenantHref("/admin/orders");
+    redirect(
+      (await tenantHref("/admin-login")) +
+        `?callbackUrl=${encodeURIComponent(callbackUrl)}`,
+    );
+  }
 
   const state = await getTenantMembershipState(tenant.id);
+
+  const navHrefs = {
+    home: await tenantHref("/admin/dashboard"),
+    orders: await tenantHref("/admin/orders"),
+    dashboard: await tenantHref("/admin/dashboard"),
+    menu: await tenantHref("/admin/menu"),
+    team: await tenantHref("/admin/team"),
+    settings: await tenantHref("/admin/settings"),
+  };
 
   if (state === "pending") {
     return (
@@ -56,25 +72,28 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="min-h-screen bg-muted/40">
       <header className="border-b border-border bg-background">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <Link href={owner ? "/admin/dashboard" : "/admin/orders"} className="font-semibold">
+          <Link
+            href={owner ? navHrefs.dashboard : navHrefs.orders}
+            className="font-semibold"
+          >
             {displayTenantName(tenant)} · Admin
           </Link>
           <nav className="flex items-center gap-4 text-sm">
             {owner && (
-              <Link href="/admin/dashboard" className="hover:underline">
+              <Link href={navHrefs.dashboard} className="hover:underline">
                 Dashboard
               </Link>
             )}
-            <Link href="/admin/orders" className="hover:underline">
+            <Link href={navHrefs.orders} className="hover:underline">
               Orders
             </Link>
-            <Link href="/admin/menu" className="hover:underline">
+            <Link href={navHrefs.menu} className="hover:underline">
               Menu
             </Link>
-            <Link href="/admin/team" className="hover:underline">
+            <Link href={navHrefs.team} className="hover:underline">
               Team
             </Link>
-            <Link href="/admin/settings" className="hover:underline">
+            <Link href={navHrefs.settings} className="hover:underline">
               Settings
             </Link>
             <span className="text-muted-foreground">{user.email}</span>

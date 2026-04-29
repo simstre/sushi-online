@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ShoppingCart, X } from "lucide-react";
 import { useCart } from "@/lib/stores/cart";
 import { Button } from "@/components/ui/button";
+import { TenantLink } from "@/components/tenant-link";
 import { cn, formatMoney } from "@/lib/utils";
 
 type Props = {
@@ -165,9 +165,9 @@ export function CartBadge({ currency = "CAD", minOrder = 0 }: Props) {
                 Checkout
               </Button>
             ) : meetsMin ? (
-              <Link href="/checkout" className="block" onClick={() => setOpen(false)}>
+              <TenantLink href="/checkout" className="block" onClick={() => setOpen(false)}>
                 <Button className="w-full">Checkout</Button>
-              </Link>
+              </TenantLink>
             ) : (
               <Button className="w-full" disabled>
                 Checkout

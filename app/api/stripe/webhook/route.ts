@@ -4,6 +4,7 @@ import { stripe } from "@/lib/stripe/client";
 import { prisma } from "@/lib/db/prisma";
 import { sendOrderReceiptEmail } from "@/lib/email";
 import { displayTenantName } from "@/lib/tenant/display";
+import { storefrontUrl } from "@/lib/tenant/url";
 
 export const runtime = "nodejs";
 
@@ -26,9 +27,10 @@ async function sendReceiptForOrder(orderId: string) {
   });
   const nameById = new Map(itemNames.map((m) => [m.id, m.name]));
 
-  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "localhost:3000";
-  const proto = rootDomain.startsWith("localhost") ? "http" : "https";
-  const orderUrl = `${proto}://${order.restaurant.slug}.${rootDomain}/confirmation?orderId=${order.id}`;
+  const orderUrl = storefrontUrl(
+    order.restaurant.slug,
+    `/confirmation?orderId=${order.id}`,
+  );
 
   await sendOrderReceiptEmail({
     to,

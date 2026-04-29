@@ -3,6 +3,7 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db/prisma";
 import { requireSuperAdmin, requireTenantAdmin } from "@/lib/auth/require";
+import { storefrontUrl } from "@/lib/tenant/url";
 
 const itemSchema = z.object({
   name: z.string().min(1),
@@ -117,12 +118,9 @@ export async function POST(req: Request) {
     }
   }
 
-  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "localhost:3000";
-  const proto = rootDomain.startsWith("localhost") ? "http" : "https";
-
   return NextResponse.json({
     restaurant,
-    url: `${proto}://${restaurant.slug}.${rootDomain}/menu`,
+    url: storefrontUrl(restaurant.slug, "/menu"),
   });
 }
 

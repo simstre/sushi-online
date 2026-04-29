@@ -4,6 +4,7 @@ import { useState } from "react";
 import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/stores/cart";
+import { currentSlugFromPath, tenantPath } from "@/lib/tenant/client-url";
 
 export function CheckoutForm({ orderId }: { orderId: string }) {
   const stripe = useStripe();
@@ -19,10 +20,12 @@ export function CheckoutForm({ orderId }: { orderId: string }) {
     setError(null);
 
     const origin = window.location.origin;
+    const slug = currentSlugFromPath(window.location.pathname);
+    const returnPath = tenantPath(`/confirmation?orderId=${orderId}`, slug);
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${origin}/confirmation?orderId=${orderId}`,
+        return_url: `${origin}${returnPath}`,
       },
     });
 

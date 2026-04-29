@@ -12,6 +12,7 @@ import {
 import { prisma } from "@/lib/db/prisma";
 import { getTenantFromHeaders } from "@/lib/tenant/resolve";
 import { displayTenantName } from "@/lib/tenant/display";
+import { storefrontUrl, tenantHref } from "@/lib/tenant/url";
 import { MOST_LIKED_SLUG } from "@/lib/fake-stats";
 
 export const dynamic = "force-dynamic";
@@ -25,9 +26,10 @@ const SAGE = "#9BB58A";
 const CREAM = "#F8F1E4";
 
 export default async function RootPage() {
-  // On a tenant subdomain, send the customer straight to the menu.
+  // On a tenant subdomain (or when /t/<slug> resolved a tenant in path mode),
+  // send the customer straight to the menu.
   const tenant = await getTenantFromHeaders();
-  if (tenant) redirect(`/menu/${MOST_LIKED_SLUG}`);
+  if (tenant) redirect(await tenantHref(`/menu/${MOST_LIKED_SLUG}`));
 
   const [restaurantCount, paidOrderAgg, featured] = await Promise.all([
     prisma.restaurant.count({ where: { inactive: false } }).catch(() => 0),
@@ -54,8 +56,9 @@ export default async function RootPage() {
   ]);
 
   const ordersServed = paidOrderAgg._count;
-  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "localhost:3000";
-  const proto = rootDomain.startsWith("localhost") ? "http" : "https";
+  const rootHost = (process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "localhost:3000").split(":")[0];
+  const tenantMode: "subdomain" | "path" =
+    process.env.NEXT_PUBLIC_TENANT_MODE === "path" ? "path" : "subdomain";
 
   return (
     <div className="relative isolate min-h-screen overflow-x-hidden bg-white text-brand-primary">
@@ -281,7 +284,7 @@ export default async function RootPage() {
               {featured.map((r) => (
                 <a
                   key={r.id}
-                  href={`${proto}://${r.slug}.${rootDomain}`}
+                  href={storefrontUrl(r.slug)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex items-center gap-3 rounded-2xl border bg-white p-3 transition hover:shadow-md"
@@ -311,7 +314,9 @@ export default async function RootPage() {
                       {displayTenantName(r)}
                     </p>
                     <p className="truncate font-mono text-[10px] uppercase tracking-[0.16em] text-brand-primary/55">
-                      {r.slug}.{rootDomain.split(":")[0]}
+                      {tenantMode === "path"
+                        ? `${rootHost}/t/${r.slug}`
+                        : `${r.slug}.${rootHost}`}
                     </p>
                   </div>
                 </a>

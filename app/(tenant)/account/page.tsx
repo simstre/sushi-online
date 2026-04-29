@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/db/prisma";
 import { getCurrentUser } from "@/lib/auth/require";
 import { getTenantFromHeaders } from "@/lib/tenant/resolve";
+import { tenantHref } from "@/lib/tenant/url";
 import { formatMoney } from "@/lib/utils";
 import { ProfileForm } from "./profile-form";
 import { PaymentMethods } from "./payment-methods";
@@ -13,7 +14,10 @@ export default async function AccountPage() {
   if (!tenant) notFound();
 
   const user = await getCurrentUser();
-  if (!user) redirect("/login?callbackUrl=/account");
+  if (!user) {
+    const cb = await tenantHref("/account");
+    redirect(`${await tenantHref("/login")}?callbackUrl=${encodeURIComponent(cb)}`);
+  }
 
   const [full, orders] = await Promise.all([
     prisma.user.findUnique({

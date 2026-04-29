@@ -5,6 +5,7 @@ import { Poppins } from "next/font/google";
 import { CircleUserRound } from "lucide-react";
 import { getTenantFromHeaders } from "@/lib/tenant/resolve";
 import { displayTenantName } from "@/lib/tenant/display";
+import { tenantHref } from "@/lib/tenant/url";
 import { getCurrentUser } from "@/lib/auth/require";
 import { CartBadge } from "./cart-badge";
 
@@ -53,6 +54,10 @@ export default async function TenantLayout({ children }: { children: React.React
   const primary = tenant.primaryColor ?? "#111111";
   const secondary = tenant.secondaryColor ?? "#f4f4f5";
 
+  const homeHref = await tenantHref("/");
+  const accountHref = await tenantHref("/account");
+  const loginHref = await tenantHref("/login");
+
   return (
     <div
       style={
@@ -66,7 +71,7 @@ export default async function TenantLayout({ children }: { children: React.React
     >
       <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6 md:py-5">
-          <Link href="/" className="flex items-center gap-3 min-w-0">
+          <Link href={homeHref} className="flex items-center gap-3 min-w-0">
             {tenant.logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -90,7 +95,7 @@ export default async function TenantLayout({ children }: { children: React.React
           <div className="flex items-center gap-4">
             {user ? (
               <Link
-                href="/account"
+                href={accountHref}
                 className="inline-flex items-center gap-1.5 text-sm hover:text-foreground"
                 aria-label="Account"
               >
@@ -99,7 +104,7 @@ export default async function TenantLayout({ children }: { children: React.React
               </Link>
             ) : (
               <Link
-                href="/login"
+                href={loginHref}
                 className="text-sm text-muted-foreground hover:text-foreground"
               >
                 Sign in

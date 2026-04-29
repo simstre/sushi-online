@@ -3,6 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { tenantFetch } from "@/lib/tenant/client-url";
 
 type Props = {
   hasAccount: boolean;
@@ -54,7 +55,7 @@ export function StripeConnect(props: Props) {
   async function startOrResume() {
     setBusy("connect");
     setError(null);
-    const res = await fetch("/api/admin/stripe/connect", { method: "POST" });
+    const res = await tenantFetch("/api/admin/stripe/connect", { method: "POST" });
     if (!res.ok) {
       const e = await res.json().catch(() => ({}));
       setError(e?.error ?? "Could not start Stripe onboarding");
@@ -68,7 +69,7 @@ export function StripeConnect(props: Props) {
   async function refresh(opts: { silent?: boolean; clearQuery?: boolean } = {}) {
     if (!opts.silent) setBusy("refresh");
     setError(null);
-    const res = await fetch("/api/admin/stripe/refresh", { method: "POST" });
+    const res = await tenantFetch("/api/admin/stripe/refresh", { method: "POST" });
     if (!res.ok) {
       const e = await res.json().catch(() => ({}));
       if (!opts.silent) setError(e?.error ?? "Refresh failed");

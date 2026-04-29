@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ImageUpload } from "@/components/image-upload";
 import { HoursEditor } from "./hours-editor";
 import { parseHours, type BusinessHours } from "@/lib/tenant/hours";
+import { tenantFetch } from "@/lib/tenant/client-url";
 
 type Tenant = {
   id: string;
@@ -42,7 +43,7 @@ export function SettingsForm({ tenant }: { tenant: Tenant }) {
     setBusy(true);
     setError(null);
     setSaved(false);
-    const res = await fetch(`/api/admin/create-restaurant?id=${form.id}`, {
+    const res = await tenantFetch(`/api/admin/create-restaurant?id=${form.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...form, businessHours: hours }),

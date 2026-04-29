@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db/prisma";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { storefrontUrl } from "@/lib/tenant/url";
 
 export const dynamic = "force-dynamic";
 
@@ -33,8 +34,6 @@ export default async function PlatformRestaurantsPage({
     take: 200,
   });
 
-  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "localhost:3000";
-  const proto = rootDomain.startsWith("localhost") ? "http" : "https";
 
   return (
     <div className="space-y-6">
@@ -125,7 +124,7 @@ export default async function PlatformRestaurantsPage({
                       Manage
                     </Link>
                     <a
-                      href={`${proto}://${r.slug}.${rootDomain}`}
+                      href={storefrontUrl(r.slug)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="underline"
