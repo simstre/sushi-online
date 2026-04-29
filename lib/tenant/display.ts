@@ -3,8 +3,8 @@ type TenantNameSource = { name: string; locationName?: string | null };
 /**
  * Formats a tenant's display name. Appends `locationName` only when it adds
  * information — if the location name is already part of the restaurant name
- * (e.g. "Sushi U Burnaby" + "Burnaby") we'd just produce "Sushi U Burnaby -
- * Burnaby", which is noise.
+ * (e.g. "Sushi Canada Burnaby" + "Burnaby") we'd just produce
+ * "Sushi Canada Burnaby - Burnaby", which is noise.
  */
 export function displayTenantName(tenant: TenantNameSource): string {
   const name = tenant.name.trim();
