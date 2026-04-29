@@ -3,6 +3,7 @@ import { getTenantFromHeaders } from "@/lib/tenant/resolve";
 import { tenantBannerUrl } from "@/lib/tenant/display";
 import { TenantInfo } from "../tenant-info";
 import { WelcomeBanner } from "../welcome-banner";
+import { PickupHeader } from "./pickup-header";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,12 @@ export default async function MenuLayout({ children }: { children: React.ReactNo
         src={tenantBannerUrl(tenant)}
         alt=""
         className="mt-4 h-32 w-full rounded-lg object-cover md:mt-6 md:h-56"
+      />
+      <PickupHeader
+        waitTimeMinutes={tenant.waitTimeMinutes}
+        address={tenant.address}
+        minOrder={tenant.minOrder}
+        currency={tenant.currency}
       />
       <WelcomeBanner
         title={tenant.welcomeMessageTitle}
