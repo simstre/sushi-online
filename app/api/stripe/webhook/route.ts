@@ -102,6 +102,16 @@ export async function POST(req: Request) {
       }
       break;
     }
+    case "account.updated": {
+      // Connected account changed — sync charges_enabled so the admin UI can
+      // surface "Stripe ready" vs "Stripe pending" without manual refresh.
+      const account = event.data.object as Stripe.Account;
+      await prisma.restaurant.updateMany({
+        where: { stripeAccountId: account.id },
+        data: { stripeChargesEnabled: Boolean(account.charges_enabled) },
+      });
+      break;
+    }
   }
 
   return NextResponse.json({ received: true });

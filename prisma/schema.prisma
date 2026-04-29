@@ -31,6 +31,7 @@ model Restaurant {
   secondaryColor   String?
   currency                String   @default("CAD")
   stripeAccountId         String?
+  stripeChargesEnabled    Boolean  @default(false)
   externalStripeAccountId String?
   address                 String?
   phone                   String?
