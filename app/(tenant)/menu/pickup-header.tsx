@@ -1,20 +1,22 @@
-import { Clock, MapPin } from "lucide-react";
+import { Clock } from "lucide-react";
 import { formatMoney } from "@/lib/utils";
 
 type Props = {
   waitTimeMinutes: number | null;
-  address: string | null;
   minOrder: number | null;
   currency: string;
 };
 
 /**
- * The big "Order pickup or delivery" strip that anchors the menu page —
- * matches the WelcomeBanner pattern from the foodTemplate design package.
+ * The "Order pickup" strip that anchors the menu page — matches the
+ * WelcomeBanner pattern from the foodTemplate design package, intentionally
+ * generic (no tenant name or address) so the headline reads the same on every
+ * restaurant.
+ *
  * Renders only the facts that exist; falls back gracefully when fields are
  * unset.
  */
-export function PickupHeader({ waitTimeMinutes, address, minOrder, currency }: Props) {
+export function PickupHeader({ waitTimeMinutes, minOrder, currency }: Props) {
   const facts: { icon: React.ReactNode; text: React.ReactNode; key: string }[] = [];
 
   if (waitTimeMinutes && waitTimeMinutes > 0) {
@@ -22,16 +24,6 @@ export function PickupHeader({ waitTimeMinutes, address, minOrder, currency }: P
       key: "wait",
       icon: <Clock className="h-3.5 w-3.5" />,
       text: <>~{waitTimeMinutes} min wait</>,
-    });
-  }
-  if (address) {
-    // Show only the street number + name (first comma-separated chunk) so it
-    // stays compact on the strip; full address lives in the TenantInfo block.
-    const short = address.split(",")[0]?.trim() ?? address;
-    facts.push({
-      key: "pickup",
-      icon: <MapPin className="h-3.5 w-3.5" />,
-      text: <>Pickup at {short}</>,
     });
   }
   if (minOrder && minOrder > 0) {
@@ -49,7 +41,7 @@ export function PickupHeader({ waitTimeMinutes, address, minOrder, currency }: P
   return (
     <section className="mt-6 border-b border-border pb-5 md:mt-10 md:pb-6">
       <h1 className="text-3xl font-extrabold tracking-[-0.02em] text-foreground md:text-5xl">
-        Order pickup or delivery
+        Order pickup
       </h1>
       {facts.length > 0 && (
         <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">

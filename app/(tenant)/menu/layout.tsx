@@ -22,7 +22,6 @@ export default async function MenuLayout({ children }: { children: React.ReactNo
     <>
       <PickupHeader
         waitTimeMinutes={tenant.waitTimeMinutes}
-        address={tenant.address}
         minOrder={tenant.minOrder}
         currency={tenant.currency}
       />
