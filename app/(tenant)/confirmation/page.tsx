@@ -23,7 +23,7 @@ export default async function ConfirmationPage({
   if (!order) {
     return (
       <div className="mx-auto max-w-md py-16 text-center">
-        <h1 className="font-display text-3xl font-bold tracking-tight">Thanks!</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Thanks!</h1>
         <p className="mt-2 text-muted-foreground">
           We couldn&apos;t locate your order. Please contact the restaurant if you were
           charged.
@@ -50,7 +50,7 @@ export default async function ConfirmationPage({
         <p className="font-mono text-xs uppercase tracking-[0.22em] text-muted-foreground">
           Order #{order.id.slice(-8)}
         </p>
-        <h1 className="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">
+        <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">
           Thanks, {order.customerName} — your order is in.
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -123,8 +123,8 @@ export default async function ConfirmationPage({
           })}
         </ul>
         <div className="flex items-center justify-between border-t-2 border-foreground bg-background px-4 py-3">
-          <span className="font-display text-lg font-semibold">Total</span>
-          <span className="font-display text-lg font-bold tabular-nums">
+          <span className="text-lg font-semibold">Total</span>
+          <span className="text-lg font-bold tabular-nums">
             {formatMoney(order.totalAmount, order.restaurant.currency)}
           </span>
         </div>

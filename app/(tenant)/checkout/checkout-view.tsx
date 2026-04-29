@@ -72,7 +72,7 @@ export function CheckoutView({
   if (clientSecret && orderId) {
     return (
       <div className="mx-auto max-w-xl py-6 md:py-8">
-        <h1 className="mb-4 font-display text-3xl font-bold tracking-tight md:text-4xl">
+        <h1 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl">
           Payment
         </h1>
         <Elements
@@ -88,7 +88,7 @@ export function CheckoutView({
   return (
     <div className="mx-auto max-w-xl space-y-5 py-6 md:py-8">
       <div>
-        <h1 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
+        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
           Checkout
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -133,8 +133,8 @@ export function CheckoutView({
         </label>
       </div>
       <div className="flex items-center justify-between border-t-2 border-foreground pt-4">
-        <span className="font-display text-lg font-semibold">Total</span>
-        <span className="font-display text-lg font-bold tabular-nums">
+        <span className="text-lg font-semibold">Total</span>
+        <span className="text-lg font-bold tabular-nums">
           {formatMoney(total)}
         </span>
       </div>

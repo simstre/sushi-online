@@ -34,7 +34,7 @@ export function ItemCard({ item, rank, currency }: Props) {
         aria-label={`View ${item.name}`}
       >
         <div className="flex min-w-0 flex-1 flex-col p-4">
-          <h3 className="font-display text-base font-semibold tracking-tight text-foreground">
+          <h3 className="text-base font-bold tracking-[-0.005em] text-foreground">
             {item.name}
           </h3>
           <div className="mt-1.5 flex flex-wrap gap-1">

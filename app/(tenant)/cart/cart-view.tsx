@@ -22,7 +22,7 @@ export function CartView({
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-md py-16 text-center">
-        <h1 className="font-display text-3xl font-semibold tracking-tight">
+        <h1 className="text-3xl font-semibold tracking-tight">
           Your cart is empty
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -37,14 +37,14 @@ export function CartView({
 
   return (
     <div className="mx-auto max-w-xl space-y-6 py-6 md:py-8">
-      <h1 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
+      <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
         Your cart
       </h1>
       <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-background">
         {items.map((item) => (
           <li key={item.lineId} className="flex items-start justify-between gap-3 p-4">
             <div className="min-w-0 flex-1">
-              <p className="font-display text-base font-semibold tracking-tight">
+              <p className="text-base font-semibold tracking-tight">
                 {item.name}
               </p>
               {item.modifiers.length > 0 && (
@@ -96,8 +96,8 @@ export function CartView({
       </ul>
 
       <div className="flex items-center justify-between border-t-2 border-foreground pt-4">
-        <span className="font-display text-xl font-semibold">Total</span>
-        <span className="font-display text-xl font-bold tabular-nums">
+        <span className="text-xl font-semibold">Total</span>
+        <span className="text-xl font-bold tabular-nums">
           {formatMoney(total, currency)}
         </span>
       </div>

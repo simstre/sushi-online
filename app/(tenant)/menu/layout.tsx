@@ -1,16 +1,18 @@
 import { notFound } from "next/navigation";
 import { getTenantFromHeaders } from "@/lib/tenant/resolve";
-import { tenantBannerUrl } from "@/lib/tenant/display";
-import { TenantInfo } from "../tenant-info";
 import { WelcomeBanner } from "../welcome-banner";
 import { PickupHeader } from "./pickup-header";
 
 export const dynamic = "force-dynamic";
 
 /**
- * Storefront chrome (banner, welcome notice, address/map/hours) shows on
- * /menu/* only. Transactional pages (/cart, /checkout, /account, /confirmation)
- * inherit just the header from the tenant layout.
+ * Storefront chrome for /menu/* — focused per the foodTemplate design:
+ * pickup header above the menu, optional tenant welcome message just
+ * under it, then straight into the menu.
+ *
+ * The richer TenantInfo block (hours, map, socials) intentionally lives
+ * elsewhere — it's noise above the items. The banner image is gone for
+ * the same reason.
  */
 export default async function MenuLayout({ children }: { children: React.ReactNode }) {
   const tenant = await getTenantFromHeaders();
@@ -18,12 +20,6 @@ export default async function MenuLayout({ children }: { children: React.ReactNo
 
   return (
     <>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={tenantBannerUrl(tenant)}
-        alt=""
-        className="mt-4 h-32 w-full rounded-lg object-cover md:mt-6 md:h-56"
-      />
       <PickupHeader
         waitTimeMinutes={tenant.waitTimeMinutes}
         address={tenant.address}
@@ -33,15 +29,6 @@ export default async function MenuLayout({ children }: { children: React.ReactNo
       <WelcomeBanner
         title={tenant.welcomeMessageTitle}
         body={tenant.welcomeMessageBody}
-      />
-      <TenantInfo
-        tenant={{
-          address: tenant.address,
-          phone: tenant.phone,
-          businessHours: tenant.businessHours,
-          googleMapsUrl: tenant.googleMapsUrl,
-          socials: tenant.socials,
-        }}
       />
       {children}
     </>

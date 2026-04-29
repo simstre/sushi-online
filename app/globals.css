@@ -38,9 +38,12 @@
   --badge-vegan-border: #a7f3d0;
 
   /* Typography. The fonts are loaded via next/font in app/layout.tsx; these
-     vars expose the loaded family names so global CSS can reference them. */
+     vars expose the loaded family names so global CSS can reference them.
+     Display intentionally points at Nunito too — the storefront and
+     marketing surfaces look unified in sans-serif. Fraunces stays loaded
+     for opt-in italic flourishes via `font-[var(--font-fraunces)] italic`. */
   --font-body: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-display: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-dm-mono), ui-monospace, "SFMono-Regular", Menlo,
     monospace;
 }

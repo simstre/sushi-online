@@ -47,8 +47,8 @@ export function PickupHeader({ waitTimeMinutes, address, minOrder, currency }: P
   }
 
   return (
-    <section className="mt-6 border-b border-border pb-5 md:mt-8 md:pb-6">
-      <h1 className="font-display text-3xl font-bold tracking-[-0.01em] text-foreground md:text-5xl">
+    <section className="mt-6 border-b border-border pb-5 md:mt-10 md:pb-6">
+      <h1 className="text-3xl font-extrabold tracking-[-0.02em] text-foreground md:text-5xl">
         Order pickup or delivery
       </h1>
       {facts.length > 0 && (

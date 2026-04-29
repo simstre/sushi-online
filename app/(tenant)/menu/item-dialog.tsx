@@ -181,7 +181,7 @@ export function ItemDialog({ item, currency, open, onClose }: Props) {
 
         {/* Scrollable body */}
         <div className="flex-1 overflow-y-auto px-5 pb-4 pt-4">
-          <h2 className="font-display text-2xl font-semibold tracking-tight">
+          <h2 className="text-2xl font-extrabold tracking-[-0.01em]">
             {item.name}
           </h2>
           {item.description && (
