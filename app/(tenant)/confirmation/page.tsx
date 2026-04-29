@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { prisma } from "@/lib/db/prisma";
 import { displayTenantName } from "@/lib/tenant/display";
 import { formatMoney } from "@/lib/utils";
@@ -21,10 +22,11 @@ export default async function ConfirmationPage({
 
   if (!order) {
     return (
-      <div className="mx-auto max-w-md py-12 text-center">
-        <h1 className="text-2xl font-semibold">Thanks!</h1>
+      <div className="mx-auto max-w-md py-16 text-center">
+        <h1 className="font-display text-3xl font-bold tracking-tight">Thanks!</h1>
         <p className="mt-2 text-muted-foreground">
-          We couldn&apos;t locate your order. Please contact the restaurant if you were charged.
+          We couldn&apos;t locate your order. Please contact the restaurant if you were
+          charged.
         </p>
         <Link href="/menu" className="mt-4 inline-block underline">
           Back to menu
@@ -39,40 +41,95 @@ export default async function ConfirmationPage({
   });
   const nameById = new Map(menuItems.map((m) => [m.id, m.name]));
 
+  const restaurantName = displayTenantName(order.restaurant);
+  const isPaid = order.status === "paid";
+
   return (
-    <div className="mx-auto max-w-xl space-y-4 py-4 md:py-6">
-      <h1 className="text-2xl font-semibold">Order confirmed</h1>
-      <p className="text-muted-foreground">
-        Thanks, {order.customerName}. Your order at {displayTenantName(order.restaurant)} has been received.
-      </p>
-      <div className="rounded-lg border border-border p-4">
-        <p className="text-sm text-muted-foreground">Order #{order.id.slice(-8)}</p>
-        <p className="mt-1 text-sm">Status: {order.status}</p>
-        <ul className="mt-3 space-y-2 border-t border-border pt-3">
+    <div className="mx-auto max-w-xl space-y-6 py-6 md:py-8">
+      <div>
+        <p className="font-mono text-xs uppercase tracking-[0.22em] text-muted-foreground">
+          Order #{order.id.slice(-8)}
+        </p>
+        <h1 className="mt-2 font-display text-3xl font-bold tracking-tight md:text-4xl">
+          Thanks, {order.customerName} — your order is in.
+        </h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {restaurantName} will start preparing it shortly.
+        </p>
+      </div>
+
+      {/* Status banner */}
+      <div
+        className={
+          isPaid
+            ? "flex items-center gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-900"
+            : "flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-amber-900"
+        }
+      >
+        <span
+          className={
+            isPaid
+              ? "flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white"
+              : "flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-500 text-white"
+          }
+        >
+          <Check className="h-4 w-4" strokeWidth={3} />
+        </span>
+        <div className="text-sm">
+          {isPaid ? (
+            <>
+              <strong>Confirmed.</strong> Your payment has been received.
+            </>
+          ) : (
+            <>
+              <strong>Order placed.</strong> Status: {order.status}
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Order summary */}
+      <div className="overflow-hidden rounded-lg border border-border bg-background">
+        <div className="border-b border-border px-4 py-3">
+          <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+            Order summary
+          </p>
+        </div>
+        <ul className="divide-y divide-border">
           {order.items.map((it) => {
             const modsLine = renderOrderModifiers(it.modifiers);
             return (
-              <li key={it.id} className="text-sm">
-                <div className="flex justify-between gap-3">
-                  <span>
-                    <span className="tabular-nums">{it.quantity}×</span>{" "}
-                    {nameById.get(it.menuItemId) ?? "Item"}
-                  </span>
-                  <span className="tabular-nums">
+              <li key={it.id} className="px-4 py-3 text-sm">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p>
+                      <span className="text-muted-foreground tabular-nums">
+                        {it.quantity}×
+                      </span>{" "}
+                      <span className="font-medium">
+                        {nameById.get(it.menuItemId) ?? "Item"}
+                      </span>
+                    </p>
+                    {modsLine && (
+                      <p className="mt-0.5 text-xs text-muted-foreground">{modsLine}</p>
+                    )}
+                  </div>
+                  <span className="shrink-0 tabular-nums">
                     {formatMoney(it.price * it.quantity, order.restaurant.currency)}
                   </span>
                 </div>
-                {modsLine && (
-                  <p className="mt-0.5 text-xs text-muted-foreground">{modsLine}</p>
-                )}
               </li>
             );
           })}
         </ul>
-        <p className="mt-3 border-t border-border pt-3 text-sm font-semibold">
-          Total: {formatMoney(order.totalAmount, order.restaurant.currency)}
-        </p>
+        <div className="flex items-center justify-between border-t-2 border-foreground bg-background px-4 py-3">
+          <span className="font-display text-lg font-semibold">Total</span>
+          <span className="font-display text-lg font-bold tabular-nums">
+            {formatMoney(order.totalAmount, order.restaurant.currency)}
+          </span>
+        </div>
       </div>
+
       <Link href="/menu" className="inline-block underline">
         Order again
       </Link>

@@ -181,9 +181,13 @@ export function ItemDialog({ item, currency, open, onClose }: Props) {
 
         {/* Scrollable body */}
         <div className="flex-1 overflow-y-auto px-5 pb-4 pt-4">
-          <h2 className="text-lg font-bold uppercase tracking-wide">{item.name}</h2>
+          <h2 className="font-display text-2xl font-semibold tracking-tight">
+            {item.name}
+          </h2>
           {item.description && (
-            <p className="mt-2 text-sm text-muted-foreground">{item.description}</p>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              {item.description}
+            </p>
           )}
 
           {item.modifiers.length > 0 && (

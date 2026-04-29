@@ -21,25 +21,34 @@ export function CartView({
 
   if (items.length === 0) {
     return (
-      <div className="mx-auto max-w-md py-12 text-center">
-        <p className="text-muted-foreground">Your cart is empty.</p>
-        <Link href="/menu" className="mt-4 inline-block underline">
-          Browse the menu
+      <div className="mx-auto max-w-md py-16 text-center">
+        <h1 className="font-display text-3xl font-semibold tracking-tight">
+          Your cart is empty
+        </h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Pick something from the menu to get started.
+        </p>
+        <Link href="/menu" className="mt-5 inline-block">
+          <Button variant="outline">Browse the menu</Button>
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-xl space-y-6 py-4 md:py-6">
-      <h1 className="text-2xl font-semibold">Cart</h1>
-      <ul className="divide-y divide-border rounded-lg border border-border bg-background">
+    <div className="mx-auto max-w-xl space-y-6 py-6 md:py-8">
+      <h1 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
+        Your cart
+      </h1>
+      <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-background">
         {items.map((item) => (
-          <li key={item.lineId} className="flex items-start justify-between gap-3 p-3">
+          <li key={item.lineId} className="flex items-start justify-between gap-3 p-4">
             <div className="min-w-0 flex-1">
-              <p className="truncate font-medium">{item.name}</p>
+              <p className="font-display text-base font-semibold tracking-tight">
+                {item.name}
+              </p>
               {item.modifiers.length > 0 && (
-                <ul className="mt-0.5 space-y-0.5 text-xs text-muted-foreground">
+                <ul className="mt-1 space-y-0.5 text-xs text-muted-foreground">
                   {item.modifiers.map((g) => (
                     <li key={g.groupId} className="truncate">
                       <span className="font-medium">{g.groupName}:</span>{" "}
@@ -48,7 +57,7 @@ export function CartView({
                   ))}
                 </ul>
               )}
-              <p className="text-sm text-muted-foreground">
+              <p className="mt-1.5 text-sm tabular-nums text-muted-foreground">
                 {formatMoney(item.unitPrice, currency)}
               </p>
             </div>
@@ -85,14 +94,17 @@ export function CartView({
           </li>
         ))}
       </ul>
-      <div className="flex items-center justify-between border-t border-border pt-4">
-        <span className="text-lg font-semibold">Total</span>
-        <span className="text-lg font-semibold">{formatMoney(total, currency)}</span>
+
+      <div className="flex items-center justify-between border-t-2 border-foreground pt-4">
+        <span className="font-display text-xl font-semibold">Total</span>
+        <span className="font-display text-xl font-bold tabular-nums">
+          {formatMoney(total, currency)}
+        </span>
       </div>
 
       {!meetsMin && (
-        <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-          Add {formatMoney(shortfall, currency)} more to reach the{" "}
+        <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">
+          Add <strong>{formatMoney(shortfall, currency)}</strong> more to reach the{" "}
           {formatMoney(minOrder, currency)} minimum order.
         </p>
       )}
@@ -100,12 +112,12 @@ export function CartView({
       {meetsMin ? (
         <Link href="/checkout" className="block">
           <Button className="w-full" size="lg">
-            Checkout
+            Continue to checkout
           </Button>
         </Link>
       ) : (
         <Button className="w-full" size="lg" disabled>
-          Checkout
+          Continue to checkout
         </Button>
       )}
     </div>
