@@ -47,7 +47,7 @@ export default async function PlatformDashboard() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
         <Stat label="Users" value={users.toString()} sub={`${superadmins} superadmin${superadmins === 1 ? "" : "s"}`} />
         <Stat label="Brands" value={brands.toString()} />
         <Stat
@@ -55,10 +55,11 @@ export default async function PlatformDashboard() {
           value={restaurants.toString()}
           sub={`${activeTenants} active`}
         />
+        <Stat label="Paid orders" value={paidOrders.toString()} />
         <Stat
-          label="Paid orders"
-          value={paidOrders.toString()}
-          sub={formatMoney(paidRevenue._sum.totalAmount ?? 0)}
+          label="Processed payments"
+          value={formatMoney(paidRevenue._sum.totalAmount ?? 0)}
+          sub="across all tenants"
         />
       </div>
 

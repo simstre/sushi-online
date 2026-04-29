@@ -124,6 +124,7 @@ model Order {
   totalAmount    Int
   customerName   String
   customerPhone  String
+  customerEmail  String?
   createdAt      DateTime @default(now())
 
   restaurant     Restaurant  @relation(fields: [restaurantId], references: [id])
@@ -165,7 +166,7 @@ model User {
   id               String   @id @default(cuid())
   email            String   @unique
   name             String?
-  passwordHash     String
+  passwordHash     String?
   isSuperAdmin     Boolean  @default(false)
   stripeCustomerId String?
   createdAt        DateTime @default(now())
@@ -193,6 +194,7 @@ model RestaurantMember {
   userId       String
   restaurantId String
   role         String   @default("admin") // "admin" | "staff"
+  status       String   @default("active") // "pending" | "active"
   createdAt    DateTime @default(now())
 
   user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -200,4 +202,5 @@ model RestaurantMember {
 
   @@unique([userId, restaurantId])
   @@index([restaurantId])
+  @@index([restaurantId, status])
 }

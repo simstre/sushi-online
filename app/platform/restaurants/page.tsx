@@ -75,6 +75,7 @@ export default async function PlatformRestaurantsPage({
               <th className="px-3 py-2">Name</th>
               <th className="px-3 py-2">Brand</th>
               <th className="px-3 py-2">Slug</th>
+              <th className="px-3 py-2">Status</th>
               <th className="px-3 py-2 text-right">Orders</th>
               <th className="px-3 py-2 text-right">Admins</th>
               <th className="px-3 py-2">Links</th>
@@ -82,9 +83,14 @@ export default async function PlatformRestaurantsPage({
           </thead>
           <tbody>
             {restaurants.map((r) => (
-              <tr key={r.id} className="border-t border-border">
+              <tr key={r.id} className="border-t border-border hover:bg-muted/30">
                 <td className="px-3 py-2">
-                  <p className="font-medium">{r.name}</p>
+                  <Link
+                    href={`/platform/restaurants/${r.id}`}
+                    className="font-medium hover:underline"
+                  >
+                    {r.name}
+                  </Link>
                   {r.locationName && (
                     <p className="text-xs text-muted-foreground">{r.locationName}</p>
                   )}
@@ -93,10 +99,31 @@ export default async function PlatformRestaurantsPage({
                 <td className="px-3 py-2 font-mono text-xs text-muted-foreground">
                   {r.slug}
                 </td>
+                <td className="px-3 py-2">
+                  <div className="flex flex-wrap gap-1">
+                    {r.inactive ? (
+                      <span className="inline-flex rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-700">
+                        Inactive
+                      </span>
+                    ) : (
+                      <span className="inline-flex rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700">
+                        Active
+                      </span>
+                    )}
+                    {!r.orderOpen && (
+                      <span className="inline-flex rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-700">
+                        Closed
+                      </span>
+                    )}
+                  </div>
+                </td>
                 <td className="px-3 py-2 text-right tabular-nums">{r._count.orders}</td>
                 <td className="px-3 py-2 text-right tabular-nums">{r._count.members}</td>
                 <td className="px-3 py-2">
                   <div className="flex gap-3 text-xs">
+                    <Link href={`/platform/restaurants/${r.id}`} className="underline">
+                      Manage
+                    </Link>
                     <a
                       href={`${proto}://${r.slug}.${rootDomain}`}
                       target="_blank"
@@ -105,21 +132,13 @@ export default async function PlatformRestaurantsPage({
                     >
                       Storefront
                     </a>
-                    <a
-                      href={`${proto}://${r.slug}.${rootDomain}/admin/orders`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline"
-                    >
-                      Admin
-                    </a>
                   </div>
                 </td>
               </tr>
             ))}
             {restaurants.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-3 py-12 text-center text-muted-foreground">
+                <td colSpan={7} className="px-3 py-12 text-center text-muted-foreground">
                   No restaurants match.
                 </td>
               </tr>

@@ -24,6 +24,7 @@ const selectedGroupSchema = z.object({
 const bodySchema = z.object({
   customerName: z.string().min(1).max(120),
   customerPhone: z.string().min(3).max(40),
+  customerEmail: z.string().email().optional(),
   items: z
     .array(
       z.object({
@@ -86,7 +87,7 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
-  const { customerName, customerPhone, items } = parsed.data;
+  const { customerName, customerPhone, customerEmail, items } = parsed.data;
 
   // Price items + validate modifiers server-side — never trust client prices.
   const menuItems = await prisma.menuItem.findMany({
@@ -218,6 +219,7 @@ export async function POST(req: Request) {
       totalAmount: total,
       customerName,
       customerPhone,
+      customerEmail: customerEmail ?? user?.email ?? null,
       items: { create: priced },
     },
   });

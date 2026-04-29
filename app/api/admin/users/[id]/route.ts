@@ -36,3 +36,37 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   });
   return NextResponse.json({ user: updated });
 }
+
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const gate = await requireSuperAdmin();
+  if (gate instanceof NextResponse) return gate;
+
+  const { id } = await params;
+  const target = await prisma.user.findUnique({
+    where: { id },
+    select: { id: true, isSuperAdmin: true },
+  });
+  if (!target) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  if (target.id === gate.id) {
+    return NextResponse.json({ error: "You cannot delete your own account." }, { status: 400 });
+  }
+  if (target.isSuperAdmin) {
+    const remaining = await prisma.user.count({
+      where: { isSuperAdmin: true, NOT: { id } },
+    });
+    if (remaining === 0) {
+      return NextResponse.json({ error: "Cannot delete the last superadmin." }, { status: 400 });
+    }
+  }
+
+  // Preserve order history by detaching the user; cascade deletes memberships + reset tokens.
+  await prisma.$transaction([
+    prisma.order.updateMany({ where: { userId: id }, data: { userId: null } }),
+    prisma.user.delete({ where: { id } }),
+  ]);
+  return NextResponse.json({ ok: true });
+}

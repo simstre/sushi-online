@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 2000" width="1600" height="2000">
+
+
+    <rect width="1600" height="2000" fill="#FBF6EC"></rect>
+    <text x="100" y="120" font-family="DM Mono, monospace" font-size="18" fill="#5C3A26" letter-spacing="6">BRAND · SHEET · v1 · FOREST &amp; MUSTARD</text>
+    <text x="100" y="200" font-family="Fraunces, serif" font-weight="700" font-size="86" fill="#34503D" letter-spacing="-2">comfyBites</text>
+    <text x="100" y="246" font-family="Fraunces, serif" font-style="italic" font-weight="500" font-size="32" fill="#B07820">comfort, in every bite.</text>
+    <line x1="100" y1="290" x2="1500" y2="290" stroke="#34503D" stroke-width="1.5"></line>
+
+    <text x="100" y="340" font-family="DM Mono, monospace" font-size="14" fill="#5C3A26" letter-spacing="4">01 · PRIMARY LOCKUP</text>
+    <g transform="translate(280 530)"><g transform="scale(1.4)">
+<g>
+  
+  <g stroke="#34503D" stroke-width="3.2" fill="none" stroke-linecap="round" opacity="0.92">
+    <path d="M-30 -85 C -38 -100, -22 -110, -30 -125"></path>
+    <path d="M0 -90 C -8 -105, 8 -115, 0 -130"></path>
+    <path d="M30 -85 C 22 -100, 38 -110, 30 -125"></path>
+  </g>
+  <path d="M-70 -60 H 70 L 80 80 A 14 14 0 0 1 66 94 H -66 A 14 14 0 0 1 -80 80 Z" fill="#D9A441"></path>
+  <path d="M-70 -60 H 70 L 72 -42 H -72 Z" fill="#B07820"></path>
+  <path d="M-40 -60 C -40 -90, -10 -90, -10 -60" stroke="#B07820" stroke-width="5" fill="none"></path>
+  <path d="M40 -60 C 40 -90, 10 -90, 10 -60" stroke="#B07820" stroke-width="5" fill="none"></path>
+  <rect x="-35" y="-15" width="70" height="55" rx="6" fill="#F8F1E4"></rect>
+  <text text-anchor="middle" y="22" font-family="Fraunces, serif" font-weight="800" font-size="34" fill="#34503D">cB</text>
+</g></g></g>
+    <g transform="translate(490 558)">
+      <text x="0" y="0" font-family="Nunito, sans-serif" font-weight="900" font-size="120" fill="#34503D" letter-spacing="-3">comfyBites</text>
+      <text x="0" y="42" font-family="DM Mono, monospace" font-size="20" fill="#5C3A26" letter-spacing="6">HOT · FRESH · DELIVERED</text>
+    </g>
+    <line x1="100" y1="700" x2="1500" y2="700" stroke="#34503D" stroke-width="1" opacity="0.3"></line>
+
+    <text x="100" y="750" font-family="DM Mono, monospace" font-size="14" fill="#5C3A26" letter-spacing="4">02 · MARK VARIATIONS</text>
+    <g transform="translate(150 920)">
+      <rect x="-110" y="-150" width="280" height="280" rx="20" fill="#F8F1E4"></rect>
+      <g transform="translate(30 0) scale(1.5)">
+<g>
+  
+  <g stroke="#34503D" stroke-width="3.2" fill="none" stroke-linecap="round" opacity="0.92">
+    <path d="M-30 -85 C -38 -100, -22 -110, -30 -125"></path>
+    <path d="M0 -90 C -8 -105, 8 -115, 0 -130"></path>
+    <path d="M30 -85 C 22 -100, 38 -110, 30 -125"></path>
+  </g>
+  <path d="M-70 -60 H 70 L 80 80 A 14 14 0 0 1 66 94 H -66 A 14 14 0 0 1 -80 80 Z" fill="#D9A441"></path>
+  <path d="M-70 -60 H 70 L 72 -42 H -72 Z" fill="#B07820"></path>
+  <path d="M-40 -60 C -40 -90, -10 -90, -10 -60" stroke="#B07820" stroke-width="5" fill="none"></path>
+  <path d="M40 -60 C 40 -90, 10 -90, 10 -60" stroke="#B07820" stroke-width="5" fill="none"></path>
+  <rect x="-35" y="-15" width="70" height="55" rx="6" fill="#F8F1E4"></rect>
+  <text text-anchor="middle" y="22" font-family="Fraunces, serif" font-weight="800" font-size="34" fill="#34503D">cB</text>
+</g></g>
+      <text x="30" y="160" text-anchor="middle" font-family="DM Mono, monospace" font-size="14" fill="#5C3A26">on cream</text>
+    </g>
+    <g transform="translate(500 920)">
+      <rect x="-110" y="-150" width="280" height="280" rx="20" fill="#34503D"></rect>
+      <g transform="translate(30 0) scale(1.5)">
+<g>
+  
+  <g stroke="#F4D08A" stroke-width="3.2" fill="none" stroke-linecap="round" opacity="0.92">
+    <path d="M-30 -85 C -38 -100, -22 -110, -30 -125"></path>
+    <path d="M0 -90 C -8 -105, 8 -115, 0 -130"></path>
+    <path d="M30 -85 C 22 -100, 38 -110, 30 -125"></path>
+  </g>
+  <path d="M-70 -60 H 70 L 80 80 A 14 14 0 0 1 66 94 H -66 A 14 14 0 0 1 -80 80 Z" fill="#D9A441"></path>
+  <path d="M-70 -60 H 70 L 72 -42 H -72 Z" fill="#B07820"></path>
+  <path d="M-40 -60 C -40 -90, -10 -90, -10 -60" stroke="#B07820" stroke-width="5" fill="none"></path>
+  <path d="M40 -60 C 40 -90, 10 -90, 10 -60" stroke="#B07820" stroke-width="5" fill="none"></path>
+  <rect x="-35" y="-15" width="70" height="55" rx="6" fill="#F8F1E4"></rect>
+  <text text-anchor="middle" y="22" font-family="Fraunces, serif" font-weight="800" font-size="34" fill="#34503D">cB</text>
+</g></g>
+      <text x="30" y="160" text-anchor="middle" font-family="DM Mono, monospace" font-size="14" fill="#5C3A26">on primary</text>
+    </g>
+    <g transform="translate(850 920)">
+      <rect x="-110" y="-150" width="280" height="280" rx="20" fill="#D9A441"></rect>
+      <g transform="translate(30 0) scale(1.5)">
+        <g stroke="#34503D" stroke-width="3.2" fill="none" stroke-linecap="round">
+          <path d="M-30 -85 C -38 -100, -22 -110, -30 -125"></path>
+          <path d="M0 -90 C -8 -105, 8 -115, 0 -130"></path>
+          <path d="M30 -85 C 22 -100, 38 -110, 30 -125"></path>
+        </g>
+        <path d="M-70 -60 H 70 L 80 80 A 14 14 0 0 1 66 94 H -66 A 14 14 0 0 1 -80 80 Z" fill="#34503D"></path>
+        <path d="M-70 -60 H 70 L 72 -42 H -72 Z" fill="#1F2C24"></path>
+        <path d="M-40 -60 C -40 -90, -10 -90, -10 -60" stroke="#1F2C24" stroke-width="5" fill="none"></path>
+        <path d="M40 -60 C 40 -90, 10 -90, 10 -60" stroke="#1F2C24" stroke-width="5" fill="none"></path>
+        <rect x="-35" y="-15" width="70" height="55" rx="6" fill="#F8F1E4"></rect>
+        <text text-anchor="middle" y="22" font-family="Fraunces, serif" font-weight="800" font-size="34" fill="#34503D">cB</text>
+      </g>
+      <text x="30" y="160" text-anchor="middle" font-family="DM Mono, monospace" font-size="14" fill="#5C3A26">on accent</text>
+    </g>
+    <g transform="translate(1200 920)">
+      <rect x="-110" y="-150" width="280" height="280" rx="20" fill="#FBF6EC" stroke="#34503D" stroke-width="1.5" stroke-dasharray="4 4"></rect>
+      <g transform="translate(30 0) scale(1.5)">
+        <g stroke="#34503D" stroke-width="3.2" fill="none" stroke-linecap="round">
+          <path d="M-30 -85 C -38 -100, -22 -110, -30 -125"></path>
+          <path d="M0 -90 C -8 -105, 8 -115, 0 -130"></path>
+          <path d="M30 -85 C 22 -100, 38 -110, 30 -125"></path>
+        </g>
+        <path d="M-70 -60 H 70 L 80 80 A 14 14 0 0 1 66 94 H -66 A 14 14 0 0 1 -80 80 Z" fill="#34503D"></path>
+        <path d="M-70 -60 H 70 L 72 -42 H -72 Z" fill="#34503D" opacity="0.65"></path>
+        <path d="M-40 -60 C -40 -90, -10 -90, -10 -60" stroke="#34503D" stroke-width="5" fill="none"></path>
+        <path d="M40 -60 C 40 -90, 10 -90, 10 -60" stroke="#34503D" stroke-width="5" fill="none"></path>
+        <rect x="-35" y="-15" width="70" height="55" rx="6" fill="#F8F1E4"></rect>
+        <text text-anchor="middle" y="22" font-family="Fraunces, serif" font-weight="800" font-size="34" fill="#34503D">cB</text>
+      </g>
+      <text x="30" y="160" text-anchor="middle" font-family="DM Mono, monospace" font-size="14" fill="#5C3A26">monochrome</text>
+    </g>
+
+    <line x1="100" y1="1130" x2="1500" y2="1130" stroke="#34503D" stroke-width="1" opacity="0.3"></line>
+    <text x="100" y="1180" font-family="DM Mono, monospace" font-size="14" fill="#5C3A26" letter-spacing="4">03 · COLOR PALETTE</text>
+    
+    <g transform="translate(100 1230)">
+      <rect width="180" height="180" rx="14" fill="#34503D" stroke="#5C3A26" stroke-width="0.5" stroke-opacity="0.15"></rect>
+      <text x="0" y="210" font-family="Nunito, sans-serif" font-weight="700" font-size="18" fill="#1F2C24">Primary</text>
+      <text x="0" y="234" font-family="DM Mono, monospace" font-size="14" fill="#5C3A26">#34503D</text>
+    </g>
+    
+    <g transform="translate(320 1230)">
+      <rect width="180" height="180" rx="14" fill="#D9A441" stroke="#5C3A26" stroke-width="0.5" stroke-opacity="0.15"></rect>
+      <text x="0" y="210" font-family="Nunito, sans-serif" font-weight="700" font-size="18" fill="#1F2C24">Bag</text>
+      <text x="0" y="234" font-family="DM Mono, monospace" font-size="14" fill="#5C3A26">#D9A441</text>
+    </g>
+    
+    <g transform="translate(540 1230)">
+      <rect width="180" height="180" rx="14" fill="#B07820" stroke="#5C3A26" stroke-width="0.5" stroke-opacity="0.15"></rect>
+      <text x="0" y="210" font-family="Nunito, sans-serif" font-weight="700" font-size="18" fill="#1F2C24">Deep</text>
+      <text x="0" y="234" font-family="DM Mono, monospace" font-size="14" fill="#5C3A26">#B07820</text>
+    </g>
+    
+    <g transform="translate(760 1230)">
+      <rect width="180" height="180" rx="14" fill="#F4D08A" stroke="#5C3A26" stroke-width="0.5" stroke-opacity="0.15"></rect>
+      <text x="0" y="210" font-family="Nunito, sans-serif" font-weight="700" font-size="18" fill="#1F2C24">Light</text>
+      <text x="0" y="234" font-family="DM Mono, monospace" font-size="14" fill="#5C3A26">#F4D08A</text>
+    </g>
+    
+    <g transform="translate(980 1230)">
+      <rect width="180" height="180" rx="14" fill="#9BB58A" stroke="#5C3A26" stroke-width="0.5" stroke-opacity="0.15"></rect>
+      <text x="0" y="210" font-family="Nunito, sans-serif" font-weight="700" font-size="18" fill="#1F2C24">Accent</text>
+      <text x="0" y="234" font-family="DM Mono, monospace" font-size="14" fill="#5C3A26">#9BB58A</text>
+    </g>
+    
+    <g transform="translate(1200 1230)">
+      <rect width="180" height="180" rx="14" fill="#F8F1E4" stroke="#5C3A26" stroke-width="0.5" stroke-opacity="0.15"></rect>
+      <text x="0" y="210" font-family="Nunito, sans-serif" font-weight="700" font-size="18" fill="#1F2C24">Cream</text>
+      <text x="0" y="234" font-family="DM Mono, monospace" font-size="14" fill="#5C3A26">#F8F1E4</text>
+    </g>
+
+    <line x1="100" y1="1560" x2="1500" y2="1560" stroke="#34503D" stroke-width="1" opacity="0.3"></line>
+    <text x="100" y="1610" font-family="DM Mono, monospace" font-size="14" fill="#5C3A26" letter-spacing="4">04 · TYPOGRAPHY</text>
+    <g transform="translate(100 1700)">
+      <text x="0" y="0" font-family="Nunito, sans-serif" font-weight="900" font-size="64" fill="#34503D" letter-spacing="-2">Nunito · 900</text>
+      <text x="0" y="36" font-family="Nunito, sans-serif" font-weight="500" font-size="20" fill="#5C3A26">Wordmark + UI · all weights</text>
+    </g>
+    <g transform="translate(800 1700)">
+      <text x="0" y="0" font-family="Fraunces, serif" font-style="italic" font-weight="500" font-size="64" fill="#34503D" letter-spacing="-1">Fraunces · italic 500</text>
+      <text x="0" y="36" font-family="Fraunces, serif" font-weight="500" font-size="20" fill="#5C3A26">Headlines &amp; taglines</text>
+    </g>
+    <g transform="translate(100 1860)">
+      <text x="0" y="0" font-family="DM Mono, monospace" font-weight="500" font-size="32" fill="#34503D" letter-spacing="6">DM MONO · 500</text>
+      <text x="0" y="36" font-family="Nunito, sans-serif" font-weight="500" font-size="20" fill="#5C3A26">Captions, labels, accents · letter-spaced</text>
+    </g>
+</svg>

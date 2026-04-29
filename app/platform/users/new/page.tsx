@@ -3,7 +3,12 @@ import { NewUserForm } from "./new-user-form";
 
 export const dynamic = "force-dynamic";
 
-export default async function NewUserPage() {
+export default async function NewUserPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ restaurantId?: string }>;
+}) {
+  const { restaurantId } = await searchParams;
   const restaurants = await prisma.restaurant.findMany({
     orderBy: [{ name: "asc" }, { locationName: "asc" }],
     select: { id: true, name: true, locationName: true, slug: true },
@@ -13,12 +18,14 @@ export default async function NewUserPage() {
   return (
     <div className="mx-auto max-w-lg space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">New user</h1>
+        <h1 className="text-2xl font-semibold">Invite user</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Creates an account and optionally links it as admin of a restaurant.
+          Sends an invite email with a &ldquo;Create your password&rdquo; link. Optionally grants
+          admin or staff access to a restaurant.
         </p>
       </div>
       <NewUserForm
+        initialRestaurantId={restaurantId ?? ""}
         restaurants={restaurants.map((r) => ({
           id: r.id,
           label: r.locationName ? `${r.name} — ${r.locationName}` : r.name,

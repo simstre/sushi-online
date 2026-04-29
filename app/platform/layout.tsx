@@ -46,6 +46,9 @@ export default async function PlatformLayout({
             <Link href="/platform/restaurants" className="hover:underline">
               Restaurants
             </Link>
+            <Link href="/platform/orders" className="hover:underline">
+              Orders
+            </Link>
             <Link href="/platform/users" className="hover:underline">
               Users
             </Link>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 600" width="1050" height="600">
+
+
+    <rect width="1050" height="600" fill="#F8F1E4"></rect>
+    <g transform="translate(120 200)">
+      <text x="0" y="0" font-family="Fraunces, serif" font-weight="700" font-size="46" fill="#34503D">Maya Patel</text>
+      <text x="0" y="38" font-family="Nunito, sans-serif" font-weight="600" font-size="22" fill="#B07820">Founder &amp; Head of Comfort</text>
+    </g>
+    <g transform="translate(120 360)" font-family="DM Mono, monospace" font-size="18" fill="#5C3A26">
+      <text x="0" y="0">maya@comfybites.app</text>
+      <text x="0" y="36">+1 (415) 555 · 0124</text>
+      <text x="0" y="72">comfybites.app</text>
+    </g>
+    <g transform="translate(870 310)"><g transform="scale(1.0)">
+<g>
+  
+  <path d="M-70 -60 H 70 L 80 80 A 14 14 0 0 1 66 94 H -66 A 14 14 0 0 1 -80 80 Z" fill="#D9A441"></path>
+  <path d="M-70 -60 H 70 L 72 -42 H -72 Z" fill="#B07820"></path>
+  <path d="M-40 -60 C -40 -90, -10 -90, -10 -60" stroke="#B07820" stroke-width="5" fill="none"></path>
+  <path d="M40 -60 C 40 -90, 10 -90, 10 -60" stroke="#B07820" stroke-width="5" fill="none"></path>
+  <rect x="-35" y="-15" width="70" height="55" rx="6" fill="#F8F1E4"></rect>
+  <text text-anchor="middle" y="22" font-family="Fraunces, serif" font-weight="800" font-size="34" fill="#34503D">cB</text>
+</g></g></g>
+</svg>

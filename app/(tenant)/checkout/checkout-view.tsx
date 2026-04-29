@@ -21,6 +21,7 @@ export function CheckoutView({
   const items = useCart((s) => s.items);
   const [name, setName] = useState(initialName);
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState(initialEmail);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -41,6 +42,7 @@ export function CheckoutView({
         body: JSON.stringify({
           customerName: name,
           customerPhone: phone,
+          customerEmail: email || undefined,
           items: items.map((i) => ({
             menuItemId: i.menuItemId,
             quantity: i.quantity,
@@ -83,11 +85,6 @@ export function CheckoutView({
   return (
     <div className="mx-auto max-w-xl space-y-4 py-4 md:py-6">
       <h1 className="text-2xl font-semibold">Checkout</h1>
-      {initialEmail && (
-        <p className="text-sm text-muted-foreground">
-          Ordering as <span className="font-medium">{initialEmail}</span>
-        </p>
-      )}
       <div className="space-y-3">
         <label className="block text-sm">
           Name
@@ -98,6 +95,20 @@ export function CheckoutView({
             required
             autoComplete="name"
           />
+        </label>
+        <label className="block text-sm">
+          Email
+          <Input
+            className="mt-1"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+          />
+          <span className="mt-1 block text-xs text-muted-foreground">
+            We&apos;ll send your receipt here.
+          </span>
         </label>
         <label className="block text-sm">
           Phone
@@ -119,7 +130,7 @@ export function CheckoutView({
       <Button
         className="w-full"
         size="lg"
-        disabled={submitting || !name || !phone}
+        disabled={submitting || !name || !phone || !email}
         onClick={startPayment}
       >
         {submitting ? "Preparing payment..." : "Continue to payment"}

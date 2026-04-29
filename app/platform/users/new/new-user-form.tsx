@@ -7,38 +7,59 @@ import { Input } from "@/components/ui/input";
 
 type Restaurant = { id: string; label: string; slug: string };
 
-export function NewUserForm({ restaurants }: { restaurants: Restaurant[] }) {
+type InviteResult = {
+  emailSent: boolean;
+  emailError?: string | null;
+  inviteUrl: string;
+};
+
+export function NewUserForm({
+  restaurants,
+  initialRestaurantId = "",
+}: {
+  restaurants: Restaurant[];
+  initialRestaurantId?: string;
+}) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
-  const [restaurantId, setRestaurantId] = useState("");
+  const [restaurantId, setRestaurantId] = useState(initialRestaurantId);
+  const [role, setRole] = useState<"admin" | "staff">("admin");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<InviteResult | null>(null);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
     setError(null);
-    const res = await fetch("/api/admin/members", {
+    setResult(null);
+    const res = await fetch("/api/platform/users/invite", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: email.trim(),
         name: name.trim() || undefined,
-        password,
-        isSuperAdmin,
         restaurantId: restaurantId || undefined,
+        role: restaurantId ? role : undefined,
       }),
     });
     setBusy(false);
+    const body = await res.json().catch(() => ({}));
     if (!res.ok) {
-      const body = await res.json().catch(() => ({ error: "Create failed" }));
-      setError(typeof body.error === "string" ? body.error : JSON.stringify(body.error));
+      setError(typeof body.error === "string" ? body.error : "Invite failed");
       return;
     }
-    router.push("/platform/users");
+    setResult({
+      emailSent: Boolean(body.emailSent),
+      emailError: body.emailError ?? null,
+      inviteUrl: body.inviteUrl,
+    });
+    setEmail("");
+    setName("");
+    setRestaurantId("");
+    setRole("admin");
+    router.refresh();
   }
 
   return (
@@ -58,28 +79,7 @@ export function NewUserForm({ restaurants }: { restaurants: Restaurant[] }) {
         <Input value={name} onChange={(e) => setName(e.target.value)} />
       </label>
       <label className="block text-sm">
-        Initial password
-        <Input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          minLength={8}
-        />
-        <span className="mt-1 block text-xs text-muted-foreground">
-          Share securely with the user; they can change it from /account.
-        </span>
-      </label>
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          checked={isSuperAdmin}
-          onChange={(e) => setIsSuperAdmin(e.target.checked)}
-        />
-        Grant platform superadmin
-      </label>
-      <label className="block text-sm">
-        Restaurant admin for (optional)
+        Restaurant access (optional)
         <select
           className="mt-1 flex h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
           value={restaurantId}
@@ -93,9 +93,40 @@ export function NewUserForm({ restaurants }: { restaurants: Restaurant[] }) {
           ))}
         </select>
       </label>
+      {restaurantId && (
+        <label className="block text-sm">
+          Role at this restaurant
+          <select
+            className="mt-1 flex h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
+            value={role}
+            onChange={(e) => setRole(e.target.value as "admin" | "staff")}
+          >
+            <option value="admin">Admin (full access)</option>
+            <option value="staff">Staff</option>
+          </select>
+        </label>
+      )}
       {error && <p className="text-sm text-red-600">{error}</p>}
-      <Button type="submit" disabled={busy || !email || !password}>
-        {busy ? "Creating..." : "Create user"}
+      {result && (
+        <div className="rounded-md border border-border bg-muted/40 p-3 text-sm">
+          {result.emailSent ? (
+            <p className="font-medium">Invite email sent.</p>
+          ) : (
+            <>
+              <p className="font-medium">Invite created.</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Email not delivered{result.emailError ? ` (${result.emailError})` : ""}. Share this
+                link directly:
+              </p>
+              <p className="mt-2 break-all rounded bg-background px-2 py-1 font-mono text-xs">
+                {result.inviteUrl}
+              </p>
+            </>
+          )}
+        </div>
+      )}
+      <Button type="submit" disabled={busy || !email}>
+        {busy ? "Sending invite..." : "Send invite"}
       </Button>
     </form>
   );

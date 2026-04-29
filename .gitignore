@@ -15,3 +15,4 @@ out
 # Scraped CodeFusion archive — re-generate via `python3 scripts/scrape_codefusion.py`.
 # 2.3 GB of images + 70 MB of JSON, not suitable for git.
 /scraped/
+.env*.local

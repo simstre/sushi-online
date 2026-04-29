@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { prisma } from "@/lib/db/prisma";
 import { requireUser } from "@/lib/auth/require";
-import { sendEmail } from "@/lib/email/send";
+import { sendPasswordResetEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -37,14 +37,11 @@ export async function POST(req: Request) {
   const origin = new URL(req.url).origin;
   const resetUrl = `${origin}/reset-password/${token}`;
 
-  await sendEmail({
+  await sendPasswordResetEmail({
     to: user.email,
-    subject: "Reset your sushi-online password",
-    text:
-      `Hi${user.name ? ` ${user.name}` : ""},\n\n` +
-      `Click the link below within the next hour to set a new password:\n\n` +
-      `${resetUrl}\n\n` +
-      `If you didn't request this, you can ignore this email.\n`,
+    resetUrl,
+    name: user.name,
+    expiresInMinutes: 60,
   });
 
   return NextResponse.json({ ok: true });

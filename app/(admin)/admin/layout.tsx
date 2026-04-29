@@ -2,7 +2,11 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getTenantFromHeaders } from "@/lib/tenant/resolve";
 import { displayTenantName } from "@/lib/tenant/display";
-import { canAdminTenant, getCurrentUser } from "@/lib/auth/require";
+import {
+  getCurrentUser,
+  getTenantMembershipState,
+  isTenantOwner,
+} from "@/lib/auth/require";
 import { LogoutButton } from "./logout-button";
 
 export const dynamic = "force-dynamic";
@@ -12,10 +16,26 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!tenant) notFound();
 
   const user = await getCurrentUser();
-  if (!user) redirect(`/login?callbackUrl=/admin/orders`);
+  if (!user) redirect(`/admin-login?callbackUrl=/admin/orders`);
 
-  const ok = await canAdminTenant(tenant.id);
-  if (!ok) {
+  const state = await getTenantMembershipState(tenant.id);
+
+  if (state === "pending") {
+    return (
+      <main className="mx-auto max-w-md p-8 text-center">
+        <h1 className="text-xl font-semibold">Pending approval</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          You are signed in as <strong>{user.email}</strong>. Your access request for{" "}
+          {displayTenantName(tenant)} is awaiting review by an existing admin.
+        </p>
+        <div className="mt-4">
+          <LogoutButton />
+        </div>
+      </main>
+    );
+  }
+
+  if (state === "none") {
     return (
       <main className="mx-auto max-w-md p-8 text-center">
         <h1 className="text-xl font-semibold">No access</h1>
@@ -30,19 +50,29 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     );
   }
 
+  const owner = await isTenantOwner(tenant.id);
+
   return (
     <div className="min-h-screen bg-muted/40">
       <header className="border-b border-border bg-background">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <Link href="/admin/orders" className="font-semibold">
+          <Link href={owner ? "/admin/dashboard" : "/admin/orders"} className="font-semibold">
             {displayTenantName(tenant)} · Admin
           </Link>
           <nav className="flex items-center gap-4 text-sm">
+            {owner && (
+              <Link href="/admin/dashboard" className="hover:underline">
+                Dashboard
+              </Link>
+            )}
             <Link href="/admin/orders" className="hover:underline">
               Orders
             </Link>
             <Link href="/admin/menu" className="hover:underline">
               Menu
+            </Link>
+            <Link href="/admin/team" className="hover:underline">
+              Team
             </Link>
             <Link href="/admin/settings" className="hover:underline">
               Settings

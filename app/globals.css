@@ -3,26 +3,59 @@
 @tailwind utilities;
 
 :root {
+  /* comfyBites · forest-mustard brand palette */
+  --brand-primary: #34503D;     /* forest green */
+  --brand-bag: #D9A441;         /* mustard */
+  --brand-deep: #B07820;        /* deep mustard */
+  --brand-light: #F4D08A;       /* light mustard */
+  --brand-accent: #9BB58A;      /* sage */
+  --brand-cream: #F8F1E4;       /* cream */
+  --brand-cocoa: #5C3A26;       /* cocoa accent (from logo subtitle) */
+
+  /* Refined-theme app tokens, mapped onto the brand palette where possible. */
   --background: #ffffff;
-  --foreground: #0a0a0a;
+  --foreground: #1a1a1a;
   --muted: #f4f4f5;
   --muted-foreground: #71717a;
   --border: #e4e4e7;
-  --primary: #111111;
-  --primary-foreground: #ffffff;
-  --secondary: #f4f4f5;
-  --secondary-foreground: #111111;
+  --primary: var(--brand-primary);
+  --primary-foreground: var(--brand-cream);
+  --secondary: var(--brand-cream);
+  --secondary-foreground: var(--brand-primary);
+  --accent: var(--brand-bag);
+  --accent-foreground: #1a1a1a;
+  --radius: 8px;
+
+  /* Tag badge palette (favorite / spicy / vegan). */
+  --badge-favorite-bg: #f0fdf4;
+  --badge-favorite-fg: #15803d;
+  --badge-favorite-border: #bbf7d0;
+  --badge-spicy-bg: #fef2f2;
+  --badge-spicy-fg: #b91c1c;
+  --badge-spicy-border: #fecaca;
+  --badge-vegan-bg: #ecfdf5;
+  --badge-vegan-fg: #047857;
+  --badge-vegan-border: #a7f3d0;
+
+  /* Typography. The fonts are loaded via next/font in app/layout.tsx; these
+     vars expose the loaded family names so global CSS can reference them. */
+  --font-body: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-dm-mono), ui-monospace, "SFMono-Regular", Menlo,
+    monospace;
 }
 
 html,
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family:
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
 }

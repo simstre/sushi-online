@@ -45,7 +45,7 @@ export default async function PlatformUsersPage({
           </p>
         </div>
         <Link href="/platform/users/new">
-          <Button>New user</Button>
+          <Button>Invite user</Button>
         </Link>
       </div>
 
@@ -78,7 +78,11 @@ export default async function PlatformUsersPage({
           <tbody>
             {users.map((u) => (
               <tr key={u.id} className="border-t border-border align-top">
-                <td className="px-3 py-2 font-mono text-xs">{u.email}</td>
+                <td className="px-3 py-2 font-mono text-xs">
+                  <Link href={`/platform/users/${u.id}`} className="hover:underline">
+                    {u.email}
+                  </Link>
+                </td>
                 <td className="px-3 py-2">{u.name ?? "—"}</td>
                 <td className="px-3 py-2">
                   {u.isSuperAdmin ? (

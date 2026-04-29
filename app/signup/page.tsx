@@ -1,6 +1,7 @@
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth/require";
+import { getTenantFromHeaders } from "@/lib/tenant/resolve";
 import { SignupForm } from "./signup-form";
 
 export const dynamic = "force-dynamic";
@@ -11,6 +12,9 @@ export default async function SignupPage({
   searchParams: Promise<{ callbackUrl?: string }>;
 }) {
   const { callbackUrl } = await searchParams;
+  const tenant = await getTenantFromHeaders();
+  if (!tenant) notFound();
+
   const user = await getCurrentUser();
   if (user) redirect(callbackUrl ?? "/account");
 

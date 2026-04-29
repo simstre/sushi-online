@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db/prisma";
+import { getTenantFromHeaders } from "@/lib/tenant/resolve";
 
 const bodySchema = z.object({
   email: z.string().email(),
@@ -10,6 +11,13 @@ const bodySchema = z.object({
 });
 
 export async function POST(req: Request) {
+  // Public signup is for customers only — tenant subdomain required.
+  // Platform admins and tenant staff are provisioned by a superadmin.
+  const tenant = await getTenantFromHeaders();
+  if (!tenant) {
+    return NextResponse.json({ error: "Signup is not available here" }, { status: 404 });
+  }
+
   const parsed = bodySchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid signup request" }, { status: 400 });

@@ -52,7 +52,7 @@ export async function requireTenantAdmin(
   const membership = await prisma.restaurantMember.findUnique({
     where: { userId_restaurantId: { userId: user.id, restaurantId } },
   });
-  if (!membership) {
+  if (!membership || membership.status !== "active") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   return user;
@@ -68,5 +68,49 @@ export async function canAdminTenant(restaurantId: string): Promise<boolean> {
   const m = await prisma.restaurantMember.findUnique({
     where: { userId_restaurantId: { userId: user.id, restaurantId } },
   });
-  return Boolean(m);
+  return Boolean(m && m.status === "active");
+}
+
+export type TenantMembershipState = "none" | "pending" | "active" | "superadmin";
+
+export async function getTenantMembershipState(
+  restaurantId: string,
+): Promise<TenantMembershipState> {
+  const user = await getCurrentUser();
+  if (!user) return "none";
+  if (user.isSuperAdmin) return "superadmin";
+  const m = await prisma.restaurantMember.findUnique({
+    where: { userId_restaurantId: { userId: user.id, restaurantId } },
+  });
+  if (!m) return "none";
+  return m.status === "active" ? "active" : "pending";
+}
+
+/**
+ * "owner" = active member with role=admin OR superadmin. Staff are *not*
+ * owners. Used to gate financial dashboards and other money-sensitive views.
+ */
+export async function isTenantOwner(restaurantId: string): Promise<boolean> {
+  const user = await getCurrentUser();
+  if (!user) return false;
+  if (user.isSuperAdmin) return true;
+  const m = await prisma.restaurantMember.findUnique({
+    where: { userId_restaurantId: { userId: user.id, restaurantId } },
+  });
+  return Boolean(m && m.status === "active" && m.role === "admin");
+}
+
+export async function requireTenantOwner(
+  restaurantId: string,
+): Promise<AuthedUser | NextResponse> {
+  const user = await requireUser();
+  if (user instanceof NextResponse) return user;
+  if (user.isSuperAdmin) return user;
+  const m = await prisma.restaurantMember.findUnique({
+    where: { userId_restaurantId: { userId: user.id, restaurantId } },
+  });
+  if (!m || m.status !== "active" || m.role !== "admin") {
+    return NextResponse.json({ error: "Owner access required" }, { status: 403 });
+  }
+  return user;
 }

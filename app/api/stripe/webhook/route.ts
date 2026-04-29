@@ -2,8 +2,50 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe/client";
 import { prisma } from "@/lib/db/prisma";
+import { sendOrderReceiptEmail } from "@/lib/email";
+import { displayTenantName } from "@/lib/tenant/display";
 
 export const runtime = "nodejs";
+
+async function sendReceiptForOrder(orderId: string) {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: { items: true, restaurant: true, user: { select: { email: true } } },
+  });
+  if (!order) return;
+
+  const to = order.customerEmail ?? order.user?.email ?? null;
+  if (!to) {
+    console.warn(`[receipt] order ${orderId} has no email — skipping`);
+    return;
+  }
+
+  const itemNames = await prisma.menuItem.findMany({
+    where: { id: { in: order.items.map((i) => i.menuItemId) } },
+    select: { id: true, name: true },
+  });
+  const nameById = new Map(itemNames.map((m) => [m.id, m.name]));
+
+  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "localhost:3000";
+  const proto = rootDomain.startsWith("localhost") ? "http" : "https";
+  const orderUrl = `${proto}://${order.restaurant.slug}.${rootDomain}/confirmation?orderId=${order.id}`;
+
+  await sendOrderReceiptEmail({
+    to,
+    customerName: order.customerName,
+    restaurantName: displayTenantName(order.restaurant),
+    orderId: order.id,
+    currency: order.restaurant.currency,
+    totalAmount: order.totalAmount,
+    items: order.items.map((it) => ({
+      name: nameById.get(it.menuItemId) ?? "Item",
+      quantity: it.quantity,
+      unitPrice: it.price,
+      modifiers: it.modifiers,
+    })),
+    orderUrl,
+  });
+}
 
 export async function POST(req: Request) {
   const sig = req.headers.get("stripe-signature");
@@ -26,13 +68,23 @@ export async function POST(req: Request) {
       const intent = event.data.object as Stripe.PaymentIntent;
       const orderId = intent.metadata.orderId;
       if (orderId) {
-        await prisma.$transaction([
-          prisma.order.update({ where: { id: orderId }, data: { status: "paid" } }),
-          prisma.payment.update({
-            where: { orderId },
-            data: { status: intent.status },
-          }),
-        ]);
+        // updateMany + status filter makes the transition idempotent: only the
+        // first webhook delivery flips pending→paid and triggers the receipt.
+        const flipped = await prisma.order.updateMany({
+          where: { id: orderId, status: { not: "paid" } },
+          data: { status: "paid" },
+        });
+        await prisma.payment.update({
+          where: { orderId },
+          data: { status: intent.status },
+        });
+        if (flipped.count > 0) {
+          try {
+            await sendReceiptForOrder(orderId);
+          } catch (err) {
+            console.error(`[receipt] failed to send for order ${orderId}:`, err);
+          }
+        }
       }
       break;
     }

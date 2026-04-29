@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Online food ordering: a phone screen with a live order surrounded by floating food icons">
+  <defs>
+    <radialGradient id="glowAmber" cx="0.2" cy="0.3" r="0.65">
+      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowRose" cx="0.85" cy="0.8" r="0.65">
+      <stop offset="0%" stop-color="#ef4444" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#ef4444" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1106"/>
+      <stop offset="100%" stop-color="#0e0b08"/>
+    </linearGradient>
+    <linearGradient id="screenGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff8ec"/>
+      <stop offset="100%" stop-color="#fde9c8"/>
+    </linearGradient>
+    <linearGradient id="ctaGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1600" height="900" fill="url(#bgGrad)"/>
+  <rect width="1600" height="900" fill="url(#glowAmber)"/>
+  <rect width="1600" height="900" fill="url(#glowRose)"/>
+
+  <!-- Decorative orbital dotted ellipses -->
+  <g fill="none" stroke="#fbbf24" stroke-opacity="0.12" stroke-width="1.5" stroke-dasharray="2 8">
+    <ellipse cx="800" cy="470" rx="540" ry="290"/>
+    <ellipse cx="800" cy="470" rx="390" ry="210"/>
+  </g>
+
+  <!-- Phone mockup, tilted slightly -->
+  <g transform="translate(620 200) rotate(-6 200 270)">
+    <!-- Drop shadow -->
+    <rect x="22" y="32" width="380" height="540" rx="44" fill="#000" opacity="0.35"/>
+    <!-- Body -->
+    <rect x="0" y="0" width="380" height="540" rx="44" fill="#1f1408" stroke="#3a2410" stroke-width="2"/>
+    <!-- Screen -->
+    <rect x="16" y="16" width="348" height="508" rx="32" fill="url(#screenGrad)"/>
+    <!-- Notch -->
+    <rect x="155" y="22" width="70" height="14" rx="7" fill="#1f1408"/>
+
+    <!-- Header -->
+    <text x="40" y="78" font-family="system-ui,sans-serif" font-size="13" font-weight="700" fill="#92400e" letter-spacing="2">YOUR ORDER</text>
+    <text x="40" y="108" font-family="system-ui,sans-serif" font-size="22" font-weight="800" fill="#1f1408">Sushi U Burnaby</text>
+    <line x1="40" y1="130" x2="340" y2="130" stroke="#fbbf24" stroke-width="2"/>
+
+    <!-- Items -->
+    <g font-family="system-ui,sans-serif" font-size="14" fill="#1f1408">
+      <text x="40" y="170" font-weight="600">Spicy Tuna Maki ×2</text>
+      <text x="340" y="170" text-anchor="end" font-weight="700">$16.50</text>
+
+      <text x="40" y="208" font-weight="600">Edamame</text>
+      <text x="340" y="208" text-anchor="end" font-weight="700">$5.00</text>
+
+      <text x="40" y="246" font-weight="600">Miso Soup</text>
+      <text x="340" y="246" text-anchor="end" font-weight="700">$3.50</text>
+    </g>
+
+    <line x1="40" y1="280" x2="340" y2="280" stroke="#fbbf24" stroke-width="2" stroke-dasharray="4 4"/>
+
+    <text x="40" y="322" font-family="system-ui,sans-serif" font-size="16" font-weight="700" fill="#1f1408">Total</text>
+    <text x="340" y="322" text-anchor="end" font-family="system-ui,sans-serif" font-size="22" font-weight="800" fill="#1f1408">$25.00</text>
+
+    <!-- CTA button -->
+    <rect x="40" y="370" width="300" height="58" rx="29" fill="url(#ctaGrad)"/>
+    <text x="190" y="408" text-anchor="middle" font-family="system-ui,sans-serif" font-size="16" font-weight="700" fill="#1f1408">PLACE ORDER →</text>
+
+    <!-- Footnote -->
+    <text x="190" y="464" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#92400e" letter-spacing="1">SECURE CHECKOUT · STRIPE</text>
+  </g>
+
+  <!-- Floating food icons -->
+
+  <!-- Sushi (top-left) -->
+  <g transform="translate(380 240) rotate(-12)">
+    <circle r="64" fill="#fbbf24" opacity="0.15"/>
+    <rect x="-42" y="-22" width="84" height="44" rx="10" fill="#ffffff" stroke="#1f1408" stroke-width="2"/>
+    <rect x="-42" y="-22" width="84" height="14" rx="6" fill="#fb7185" stroke="#1f1408" stroke-width="2"/>
+    <line x1="-32" y1="-8" x2="-32" y2="22" stroke="#1f1408" stroke-width="1.5" opacity="0.3"/>
+    <line x1="0" y1="-8" x2="0" y2="22" stroke="#1f1408" stroke-width="1.5" opacity="0.3"/>
+    <line x1="32" y1="-8" x2="32" y2="22" stroke="#1f1408" stroke-width="1.5" opacity="0.3"/>
+  </g>
+
+  <!-- Pizza slice (top-right) -->
+  <g transform="translate(1240 230) rotate(20)">
+    <circle r="64" fill="#ef4444" opacity="0.15"/>
+    <path d="M -50 32 L 0 -52 L 50 32 Z" fill="#fbbf24" stroke="#1f1408" stroke-width="2.5"/>
+    <path d="M -45 28 L 45 28" stroke="#92400e" stroke-width="2" opacity="0.4"/>
+    <circle cx="-15" cy="5" r="6" fill="#dc2626"/>
+    <circle cx="15" cy="-5" r="5" fill="#dc2626"/>
+    <circle cx="0" cy="20" r="5" fill="#dc2626"/>
+  </g>
+
+  <!-- Burger (bottom-left) -->
+  <g transform="translate(290 670) rotate(8)">
+    <circle r="64" fill="#fbbf24" opacity="0.15"/>
+    <path d="M -46 -10 Q -46 -42 0 -42 Q 46 -42 46 -10 Z" fill="#f59e0b" stroke="#1f1408" stroke-width="2"/>
+    <circle cx="-20" cy="-26" r="2" fill="#fff"/>
+    <circle cx="10" cy="-32" r="2" fill="#fff"/>
+    <circle cx="25" cy="-20" r="2" fill="#fff"/>
+    <rect x="-46" y="-8" width="92" height="6" fill="#16a34a"/>
+    <rect x="-46" y="0" width="92" height="8" fill="#7f1d1d"/>
+    <rect x="-46" y="10" width="92" height="6" fill="#facc15"/>
+    <path d="M -46 16 Q -46 38 0 38 Q 46 38 46 16 Z" fill="#d97706" stroke="#1f1408" stroke-width="2"/>
+  </g>
+
+  <!-- Coffee cup (bottom-right) -->
+  <g transform="translate(1290 690) rotate(-10)">
+    <circle r="64" fill="#fbbf24" opacity="0.15"/>
+    <path d="M -10 -52 Q -16 -58 -10 -64 Q -4 -70 -10 -76" stroke="#fff" stroke-opacity="0.6" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M 10 -52 Q 4 -58 10 -64 Q 16 -70 10 -76" stroke="#fff" stroke-opacity="0.6" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M -36 -30 L -28 36 Q -28 46 -18 46 L 18 46 Q 28 46 28 36 L 36 -30 Z" fill="#fff" stroke="#1f1408" stroke-width="2.5"/>
+    <ellipse cx="0" cy="-30" rx="36" ry="6" fill="#3f1d0a"/>
+    <path d="M 28 -8 Q 50 -8 50 14 Q 50 32 28 32" fill="none" stroke="#1f1408" stroke-width="2.5"/>
+  </g>
+
+  <!-- Ramen bowl (mid-left) -->
+  <g transform="translate(190 470)">
+    <circle r="64" fill="#fbbf24" opacity="0.15"/>
+    <ellipse cx="0" cy="22" rx="52" ry="14" fill="#dc2626" stroke="#1f1408" stroke-width="2"/>
+    <path d="M -52 22 L -47 5 Q 0 -6 47 5 L 52 22 Z" fill="#fef3c7" stroke="#1f1408" stroke-width="2"/>
+    <path d="M -32 5 Q -20 -3 -10 5 Q 0 -3 10 5 Q 20 -3 32 5" stroke="#fbbf24" stroke-width="2.5" fill="none"/>
+    <ellipse cx="-16" cy="2" rx="8" ry="6" fill="#fff" stroke="#1f1408" stroke-width="1.5"/>
+    <ellipse cx="-16" cy="2" rx="3" ry="3" fill="#fbbf24"/>
+    <path d="M 0 -16 Q -4 -22 0 -28 Q 4 -34 0 -40" stroke="#fff" stroke-opacity="0.5" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- Order-in-progress badge (top-center floating) -->
+  <g transform="translate(800 130)">
+    <rect x="-110" y="-22" width="220" height="44" rx="22" fill="#0e0b08" stroke="#fbbf24" stroke-width="1.5" opacity="0.92"/>
+    <circle cx="-78" cy="0" r="6" fill="#34d399"/>
+    <text x="-62" y="5" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="#fde9c8" letter-spacing="1">ORDER IN PROGRESS</text>
+  </g>
+</svg>
