@@ -1,25 +1,17 @@
 import type { Metadata } from "next";
-import { DM_Mono, Fraunces, Nunito } from "next/font/google";
+import { DM_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
-// Brand typography (forest-mustard suite):
-//   Nunito  — wordmark + UI body
-//   Fraunces — display headlines & taglines (italic for tagline)
+// Typography:
+//   Poppins — display headlines (and brand wordmark when used inline)
+//   System sans-serif — body (no custom font load; matches the OS UI font)
 //   DM Mono — captions, labels, all-caps accents
-const nunito = Nunito({
+const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800", "900"],
   display: "swap",
-  variable: "--font-nunito",
-});
-
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  style: ["normal", "italic"],
-  display: "swap",
-  variable: "--font-fraunces",
+  variable: "--font-poppins",
 });
 
 const dmMono = DM_Mono({
@@ -61,10 +53,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`${nunito.variable} ${fraunces.variable} ${dmMono.variable}`}
-    >
+    <html lang="en" className={`${poppins.variable} ${dmMono.variable}`}>
       <body className="min-h-screen antialiased">
         <Providers>{children}</Providers>
       </body>

@@ -37,13 +37,12 @@
   --badge-vegan-fg: #047857;
   --badge-vegan-border: #a7f3d0;
 
-  /* Typography. The fonts are loaded via next/font in app/layout.tsx; these
-     vars expose the loaded family names so global CSS can reference them.
-     Display intentionally points at Nunito too — the storefront and
-     marketing surfaces look unified in sans-serif. Fraunces stays loaded
-     for opt-in italic flourishes via `font-[var(--font-fraunces)] italic`. */
-  --font-body: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+  /* Typography. Display = Poppins (loaded via next/font). Body = the OS
+     system sans (no custom load), so paragraphs feel native and pages
+     stay light. DM Mono is reserved for captions and all-caps accents. */
+  --font-body: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-dm-mono), ui-monospace, "SFMono-Regular", Menlo,
     monospace;
 }
