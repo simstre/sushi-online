@@ -9,11 +9,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ImageUpload } from "@/components/image-upload";
 import { cn, formatMoney } from "@/lib/utils";
 import {
-import { tenantFetch } from "@/lib/tenant/client-url";
   ALL_MENU_TAGS,
   TAG_INFO,
   type MenuItemTag,
 } from "@/lib/menu/tags";
+import { tenantFetch } from "@/lib/tenant/client-url";
 
 type Item = {
   id: string;
