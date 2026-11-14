@@ -26,7 +26,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-FIREBASE_API_KEY = "REDACTED_SECRET"
+FIREBASE_API_KEY = os.environ.get("FIREBASE_API_KEY", "")
 PROJECT_ID = "cold-fusion-9419a"
 FIRESTORE_BASE = f"https://firestore.googleapis.com/v1/projects/{PROJECT_ID}/databases/(default)/documents"
 
